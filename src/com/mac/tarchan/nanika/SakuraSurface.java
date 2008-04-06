@@ -28,7 +28,7 @@ import com.mac.tarchan.image.ChromakeyImageFilter;
 /**
  * このクラスは、サーフェスを表すために使用します。
  * 
- * @version 1.0
+ * @since 1.0
  * @author tarchan
  */
 public class SakuraSurface implements Shape
@@ -37,7 +37,7 @@ public class SakuraSurface implements Shape
 	private static final Log log = LogFactory.getLog(SakuraSurface.class);
 
 	/** サーフェス ID */
-	private String id;
+	private int id;
 
 	/** イメージ */
 	private BufferedImage image;
@@ -51,7 +51,7 @@ public class SakuraSurface implements Shape
 	 * @param id サーフェス ID
 	 * @param image サーフェスイメージ
 	 */
-	public SakuraSurface(String id, BufferedImage image)
+	public SakuraSurface(int id, BufferedImage image)
 	{
 		this.id = id;
 		this.image = image;

@@ -8,12 +8,30 @@
 	<property name="build.src" value="src" />
 	<property name="build.bin" value="bin" />
 	<property name="build.lib" value="lib" />
+	<property name="build.rsrc" value="rsrc" />
 	<property name="build.jar" value="${manifest.title}.jar" />
 	<property name="java.home" value="${env.JAVA_HOME}" />
 	<property name="java.docs" value="${java.home}/docs" />
 
 	<path id="build.class.path">
 	</path>
+
+	<target name="clean">
+		<delete dir="${build.bin}" />
+		<delete file="${build.jar}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${build.bin}" />
+		<javac srcdir="${build.src}" destdir="${build.bin}" encoding="UTF-8">
+			<classpath refid="build.class.path" />
+		</javac>
+		<copy todir="${build.bin}" overwrite="true">
+			<fileset dir="${build.rsrc}">
+				<include name="**/*.properties"/>
+			</fileset>
+		</copy>
+	</target>
 
 	<target name="jar" depends="compile">
 		<jar basedir="${build.bin}" destfile="${build.jar}">
@@ -27,18 +45,14 @@
 				<attribute name="Implementation-Vendor" value="${manifest.vendor}" />
 			</manifest>
 		</jar>
-	</target>
-
-	<target name="compile">
-		<mkdir dir="${build.bin}" />
-		<javac srcdir="${build.src}" destdir="${build.bin}" encoding="UTF-8">
-			<classpath refid="build.class.path" />
-		</javac>
-		<copy todir="${build.bin}" overwrite="true">
-			<fileset dir="${build.src}">
+		<copy todir="." overwrite="true">
+			<fileset dir="${build.rsrc}">
 				<include name="**/*.properties"/>
 			</fileset>
 		</copy>
+	</target>
+
+	<target name="app" depends="jar">
 	</target>
 
 	<target name="javadoc">
@@ -50,11 +64,6 @@
 			<link href="http://java.sun.com/javase/ja/6/docs/ja/api/" />
 			<link href="http://logging.apache.org/log4j/1.2/apidocs/" />
 		</javadoc>
-	</target>
-
-	<target name="clean">
-		<delete dir="${build.bin}" />
-		<delete file="${build.jar}" />
 	</target>
 
 	<target name="download.jars">

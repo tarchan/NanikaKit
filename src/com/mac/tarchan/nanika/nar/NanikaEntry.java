@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * このクラスは、NAR ファイルエントリを表すために使用します。
  * 
- * @version 1.0
+ * @since 1.0
  * @author tarchan
  * @see ZipFile
  * @see ZipEntry

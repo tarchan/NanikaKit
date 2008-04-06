@@ -12,7 +12,7 @@ import java.awt.image.RGBImageFilter;
 /**
  * このクラスは、クロマキー合成を実行します。
  * 
- * @version 1.0
+ * @since 1.0
  * @author tarchan
  */
 public class ChromakeyImageFilter extends RGBImageFilter

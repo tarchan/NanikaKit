@@ -21,9 +21,9 @@ import org.apache.commons.logging.LogFactory;
 import com.mac.tarchan.nanika.nar.NanikaArchive;
 
 /**
- * このクラスは、ゴーストを表すために使用します。
+ * このクラスは、ゴーストを実装します。
  * 
- * @version 1.0
+ * @since 1.0
  * @author tarchan
  */
 public class SakuraGhost
@@ -35,21 +35,25 @@ public class SakuraGhost
 	private LinkedHashMap<String, NanikaArchive> nar = new LinkedHashMap<String, NanikaArchive>();
 
 	/** シェル */
-	private LinkedHashMap<String, SakuraShell> shell = new LinkedHashMap<String, SakuraShell>();
+	private LinkedHashMap<Integer, SakuraShell> shell = new LinkedHashMap<Integer, SakuraShell>();
 
 	/** NAR ファイル */
 	private NanikaArchive currentNar;
 
 	/** 現在のシェル */
-	private String currentShell = "0";
+	private SakuraShell currentShell;
+
+	/** ゴーストの栞 */
+	private SakuraShiori shiori;
 
 	/**
 	 * NAR ファイルをインストールします。
 	 * 
 	 * @param name NAR ファイル名
+	 * @return このゴーストへの参照
 	 * @throws IOException インストール中にエラーが発生した場合
 	 */
-	public void install(String name) throws IOException
+	public SakuraGhost install(String name) throws IOException
 	{
 		NanikaArchive newNar = new NanikaArchive(name);
 		if (currentNar == null) currentNar = newNar;
@@ -57,19 +61,34 @@ public class SakuraGhost
 		log.debug("nar=" + newNar);
 		Properties props = nar.get(name).getProperties();
 		log.debug("props=" + props);
+
+		return this;
 	}
 
 	/**
 	 * ゴーストの姿を現します。
+	 * 
+	 * @return このゴーストへの参照
 	 */
-	public void materialize()
+	public SakuraGhost materialize()
 	{
+		// loading
 		log.info("starting up engine");
 		loadShiori();
 		loadBalloon();
 		loadGhost();
 		loadShell();
+
+		// materialize
+		setScope(0);
+		setSurface(0);
+		setBalloonSurface(0);
+		setScope(1);
+		setSurface(10);
+		setBalloonSurface(0);
 		log.info("materialized");
+
+		return this;
 	}
 
 	/**
@@ -80,6 +99,9 @@ public class SakuraGhost
 		log.info("loading SHIORI subsystem");
 		String shioriSubsystem = System.getProperty("com.mac.tarchan.nanika.shiori.dll", "DummyShiori");
 		log.debug("SHIORI=" + shioriSubsystem);
+
+		shiori = new SakuraShiori();
+		shiori.getTalk();
 	}
 
 	/**
@@ -87,6 +109,7 @@ public class SakuraGhost
 	 */
 	private void loadBalloon()
 	{
+		currentNar.getBalloon();
 		String name="name";
 		String craftman = "craftman";
 		log.info(String.format("loading Balloon named as \"%s\" crafted by %s", name, craftman));
@@ -105,36 +128,89 @@ public class SakuraGhost
 	 */
 	private void loadShell()
 	{
-		int num = 0;
-		int max = currentNar.list("").length;
-		log.info(String.format("loading surface %d/%d", num, max));
+		SakuraShell sakura = new SakuraShell("sakura", currentNar);
+		SakuraShell kero = new SakuraShell("kero", sakura);
 
-		String name="name";
-		String craftman = "craftman";
-		log.info(String.format("loading SHELL elements named as \"%s\" crafted by %s", name, craftman));
+//		File shellHome = currentNar.getShellHome();
+//		NanikaEntry[] png = currentNar.list(new File(shellHome, "surface.+\\.png").getPath());
+//		NanikaEntry[] txt = currentNar.list(new File(shellHome, "surface.+\\.txt").getPath());
+//		int num = png.length;
+//		int max = txt.length;
+		log.info(String.format("loading surface %d", sakura.getSurfaceCount()));
+
+		String id = sakura.getId();
+		String craftman = sakura.getCraftman();
+		log.info(String.format("loading SHELL elements named as \"%s\" crafted by \"%s\"", id, craftman));
 
 //		log.debug("currentNar=" + currentNar);
 //		log.debug("shell=" + shell);
 
 		// sakura
-		shell.put("0", new SakuraShell("sakura", currentNar));
-		shell.get("0").setSurface("0");
+		shell.put(0, sakura);
+//		shell.get(0).setSurface(0);
 
 		// kero
-		shell.put("1", new SakuraShell("kero", currentNar));
-		shell.get("1").setSurface("10");
+		shell.put(1, kero);
+//		shell.get(1).setSurface(10);
 	}
 
 	/**
 	 * ゴーストの姿を消します。
+	 * 
+	 * @return このゴーストへの参照
 	 */
-	public void vanish()
+	public SakuraGhost vanish()
 	{
 		log.info("vanish");
 		nar.clear();
 		shell.clear();
 		currentNar = null;
 		currentShell = null;
+
+		return this;
+	}
+
+	/**
+	 * スコープを変更します。
+	 * 
+	 * @param scope スコープ番号
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost setScope(int scope)
+	{
+		currentShell = shell.get(scope);
+
+		return this;
+	}
+
+	/**
+	 * 現在のスコープのサーフェスを変更します。
+	 * 
+	 * @param id サーフェス ID
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost setSurface(int id)
+	{
+		if (currentShell != null) currentShell.setSurface(id);
+
+		return this;
+	}
+
+	/**
+	 * 現在のスコープのバルーンサーフェスを変更します。
+	 * 
+	 * @param id バルーンサーフェス ID
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost setBalloonSurface(int id)
+	{
+		if (currentShell != null)
+		{
+			SakuraBalloon balloon = currentShell.getBalloon();
+			if (balloon != null) balloon.setSurface(id);
+		}
+
+		return this;
 	}
 
 	/**
@@ -144,8 +220,8 @@ public class SakuraGhost
 	 */
 	public void draw(Graphics2D g)
 	{
-		SakuraShell sakura = shell.get("0");
-		SakuraShell kero = shell.get("1");
+		SakuraShell sakura = shell.get(0);
+		SakuraShell kero = shell.get(1);
 
 		Rectangle clip = g.getClipBounds();
 		log.debug("clip=" + clip);
@@ -155,7 +231,7 @@ public class SakuraGhost
 		int bottom = y + clip.height;
 
 		// サクラ
-		if (sakura != null)
+		if (sakura != null && sakura.getSurface() != null)
 		{
 			AffineTransform tx = new AffineTransform();
 //			tx.scale(0.8, 0.8);
@@ -173,7 +249,7 @@ public class SakuraGhost
 		}
 
 		// ケロ
-		if (kero != null)
+		if (kero != null && kero.getSurface() != null)
 		{
 			AffineTransform tx = new AffineTransform();
 			Rectangle rect = kero.getSurface().getBounds();

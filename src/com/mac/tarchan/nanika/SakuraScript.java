@@ -7,14 +7,22 @@
  */
 package com.mac.tarchan.nanika;
 
+import java.util.Scanner;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * このクラスは、さくらスクリプトを評価する機能を実装します。
  * 
- * @version 1.0
+ * @since 1.0
  * @author tarchan
  */
 public class SakuraScript
 {
+	/** ロガー */
+	private static final Log log = LogFactory.getLog(SakuraScript.class);
+
 	/**
 	 * さくらスクリプトを評価して、ゴーストを操作します。
 	 * 
@@ -24,6 +32,12 @@ public class SakuraScript
 	 */
 	public static Object eval(String script, SakuraGhost ghost)
 	{
+		Scanner s = new Scanner(script).useDelimiter("\\\\");
+		while (s.hasNext())
+		{
+			String next = s.next();
+			log.debug("next=" + next);
+		}
 		return null;
 	}
 }

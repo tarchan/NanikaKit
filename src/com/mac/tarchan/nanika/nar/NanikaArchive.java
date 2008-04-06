@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -25,7 +26,7 @@ import com.mac.tarchan.nanika.SakuraSurface;
 /**
  * このクラスは、NAR ファイルからエントリを読み込むために使用します。
  * 
- * @version 1.0
+ * @since 1.0
  * @author tarchan
  * @see ZipFile
  */
@@ -41,7 +42,7 @@ public class NanikaArchive
 	protected ZipFile zip;
 
 	/** プロパティー */
-	protected Properties properties = new Properties(getDefault());
+	protected Properties properties = new Properties(getDefaults());
 
 	/**
 	 * NanikaArchive オブジェクトを構築します。
@@ -80,7 +81,7 @@ public class NanikaArchive
 	 * 
 	 * @return プロパティー
 	 */
-	private static Properties getDefault()
+	private static Properties getDefaults()
 	{
 		Properties defaults = new Properties();
 
@@ -101,11 +102,13 @@ public class NanikaArchive
 		defaults.setProperty("nanika.shell.descript", "descript.txt");
 		defaults.setProperty("nanika.shell.surfaces", "surfaces.txt");
 
+		// balloon
+		defaults.setProperty("balloon.directory", "balloon");
+		defaults.setProperty("balloon.descript", "descript.txt");
+
 		// other
-		defaults.setProperty("nanika.balloon", "balloon");
 		defaults.setProperty("nanika.headline", "headline");
 		defaults.setProperty("nanika.plugin", "plugin");
-		defaults.setProperty("balloon.directory", "balloon");
 
 		return defaults;
 	}
@@ -180,7 +183,7 @@ public class NanikaArchive
 	public NanikaEntry getEntry(File file)
 	{
 		ZipEntry zipEntry = zip.getEntry(file.getPath());
-		log.debug("zipEntry=" + zipEntry);
+//		log.debug("zipEntry=" + zipEntry);
 		return zipEntry != null ? new NanikaEntry(zip, zipEntry) : null;
 	}
 
@@ -192,7 +195,21 @@ public class NanikaArchive
 	 */
 	public NanikaEntry[] list(String regex)
 	{
-		return new NanikaEntry[zip.size()];
+		log.debug("regex=" + regex);
+		java.util.Enumeration<? extends ZipEntry> in = zip.entries();
+		LinkedList<NanikaEntry> out = new LinkedList<NanikaEntry>();
+		while (in.hasMoreElements())
+		{
+			ZipEntry entry = in.nextElement();
+			String name = entry.getName();
+			if (name.matches(regex))
+			{
+				log.debug("entry=" + name);
+				out.add(getEntry(name));
+			}
+		}
+
+		return out.toArray(new NanikaEntry[0]);
 	}
 
 	/**
@@ -212,7 +229,7 @@ public class NanikaArchive
 	 * @param id サーフェス ID
 	 * @return サーフェス
 	 */
-	public SakuraSurface getSurface(String id)
+	public SakuraSurface getSurface(int id)
 	{
 		File file = new File(getShellHome(), String.format("surface%s.png", id));
 		log.debug(id + "=" + file);
@@ -232,6 +249,28 @@ public class NanikaArchive
 		{
 			log.error("image read error", e);
 			return null;
+		}
+	}
+
+	/**
+	 * バルーンを取得します。
+	 */
+	public void getBalloon()
+	{
+		try
+		{
+			File home = new File(getProperty("balloon.directory"));
+			log.debug("balloon=" + home);
+			NanikaEntry descript = getEntry(new File(home, getProperty("balloon.descript")));
+			if (descript == null) return;
+			descript.readDescript();
+			NanikaEntry balloons0 = getEntry(new File(home, "balloons0.png"));
+			if (balloons0 == null) return;
+			balloons0.readImage();
+		}
+		catch (IOException e)
+		{
+			log.error("read balloon error", e);
 		}
 	}
 
@@ -265,7 +304,7 @@ public class NanikaArchive
 	{
 		try
 		{
-			NanikaEntry entry = getEntry(getProperties().getProperty("nanika.readme"));
+			NanikaEntry entry = getEntry(getProperty("nanika.readme"));
 			return entry != null ? entry.readText() : null;
 		}
 		catch (IOException e)
