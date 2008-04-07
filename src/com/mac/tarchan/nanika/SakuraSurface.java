@@ -59,6 +59,16 @@ public class SakuraSurface implements Shape
 	}
 
 	/**
+	 * サーフェスを構築します。
+	 * 
+	 * @param image サーフェスイメージ
+	 */
+	public SakuraSurface(BufferedImage image)
+	{
+		this(-1, image);
+	}
+
+	/**
 	 * 背景色を返します。
 	 * 
 	 * @return 背景色
@@ -66,6 +76,17 @@ public class SakuraSurface implements Shape
 	public Color getBackground()
 	{
 		return new Color(image.getRGB(0, 0), true);
+	}
+
+	/**
+	 * 位置を設定します。
+	 * 
+	 * @param x X 座標
+	 * @param y Y 座標
+	 */
+	public void setLocation(int x, int y)
+	{
+		rect.setLocation(x, y);
 	}
 
 	/**
@@ -85,6 +106,7 @@ public class SakuraSurface implements Shape
 	 */
 	public void draw(Graphics2D g)
 	{
+//		Rectangle rect = getBounds();
 //		g.drawImage(image, null, rect.x, rect.y);
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		ChromakeyImageFilter chromakey = new ChromakeyImageFilter(getBackground().getRGB());

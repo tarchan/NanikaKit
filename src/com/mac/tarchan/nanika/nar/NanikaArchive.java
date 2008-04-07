@@ -105,6 +105,10 @@ public class NanikaArchive
 		// balloon
 		defaults.setProperty("balloon.directory", "balloon");
 		defaults.setProperty("balloon.descript", "descript.txt");
+		defaults.setProperty("balloon.arrow0", "arrow0.png");
+		defaults.setProperty("balloon.arrow1", "arrow1.png");
+		defaults.setProperty("balloon.onlinemarker", "online.png");
+		defaults.setProperty("balloon.sstpmarker", "sstp.png");
 
 		// other
 		defaults.setProperty("nanika.headline", "headline");

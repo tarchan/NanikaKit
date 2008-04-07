@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.mac.tarchan.nanika.SakuraGhost;
+import com.mac.tarchan.nanika.MaterializedSakuraGhost;
 
 /**
  * 何か。ミニ劇場を実装します。
@@ -36,7 +36,7 @@ public class NanikaMini extends Canvas
 	private static final Log log = LogFactory.getLog(NanikaMini.class);
 
 	/** ゴースト */
-	private SakuraGhost ghost;
+	private MaterializedSakuraGhost ghost;
 
 	/** サムネール */
 	private BufferedImage thumbnail;
@@ -95,7 +95,7 @@ public class NanikaMini extends Canvas
 //			args = new String[]{"nanika/nar/sakura020212.nar"};
 
 			// すべての NAR ファイルをインストール
-			ghost = new SakuraGhost();
+			ghost = new MaterializedSakuraGhost();
 			for (String name : args)
 			{
 				ghost.install(name);

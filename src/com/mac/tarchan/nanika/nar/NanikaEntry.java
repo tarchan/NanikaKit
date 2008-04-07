@@ -108,15 +108,14 @@ public class NanikaEntry
 	/**
 	 * descript テキスト形式を読み込みます。
 	 * 
-	 * @return プロパティーオブジェクト
+	 * @param descript 出力先プロパティー
+	 * @param encoding 文字エンコーディング
 	 * @throws IOException 入力エラーが発生した場合
 	 */
-	public Properties readDescript() throws IOException
+	private void loadDescript(Properties descript, String encoding) throws IOException
 	{
-		Properties descript = new Properties();
-		log.debug("entry=" + entry.getName());
 		InputStream in = getInputStream();
-		String encoding = "Shift_JIS";
+		if (encoding == null) encoding = "Shift_JIS";
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in, encoding));
 		int index = 0;
 		while (true)
@@ -137,7 +136,57 @@ public class NanikaEntry
 				// skip line
 			}
 		}
+		reader.close();
+	}
 
+	/**
+	 * descript テキスト形式を読み込みます。
+	 * 
+	 * @return プロパティーオブジェクト
+	 * @throws IOException 入力エラーが発生した場合
+	 */
+	public Properties readDescript() throws IOException
+	{
+		Properties descript = new Properties();
+		loadDescript(descript, null);
+//		log.debug("entry=" + entry.getName());
+//		InputStream in = getInputStream();
+//		String encoding = "Shift_JIS";
+//		BufferedReader reader = new BufferedReader(new InputStreamReader(in, encoding));
+//		int index = 0;
+//		while (true)
+//		{
+//			String line = reader.readLine();
+//			if (line == null) break;
+//
+//			String[] token = line.split(" *, *", 2);
+//			log.debug(String.format("%2d: %s", ++index, Arrays.toString(token)));
+//			if (token.length == 2)
+//			{
+//				String key = token[0];
+//				String value = token[1];
+//				descript.setProperty(key, value);
+//			}
+//			else
+//			{
+//				// skip line
+//			}
+//		}
+
+		return descript;
+	}
+
+	/**
+	 * descript テキスト形式を読み込みます。
+	 * 
+	 * @param defaults デフォルトプロパティー
+	 * @return プロパティーオブジェクト
+	 * @throws IOException 入力エラーが発生した場合
+	 */
+	public Properties readDescript(Properties defaults) throws IOException
+	{
+		Properties descript = new Properties(defaults);
+		loadDescript(descript, null);
 		return descript;
 	}
 

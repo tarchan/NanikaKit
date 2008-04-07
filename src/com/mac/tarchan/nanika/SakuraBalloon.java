@@ -8,6 +8,7 @@
 package com.mac.tarchan.nanika;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -56,6 +57,30 @@ public class SakuraBalloon
 	/** サーフェスリスト */
 	private HashMap<Integer, SakuraSurface> surfaces = new HashMap<Integer, SakuraSurface>();
 
+	/** スクロールマーカ(上) */
+	private SakuraSurface arrow0;
+
+	/** スクロールマーカ(下) */
+	private SakuraSurface arrow1;
+
+	/** ONLINE マーカ */
+	private SakuraSurface onlinemarker;
+
+	/** SSTP マーカ */
+	private SakuraSurface sstpmarker;
+
+	/** ホームポジション */
+	private Point origin;
+
+	/** 自動改行位置 */
+	private Point wordwrappoint;
+
+	/** フォント */
+	private Font font;
+
+	/** フォントカラー */
+	private Color fontColor;
+
 	/**
 	 * バルーンを構築します。
 	 * 
@@ -70,9 +95,83 @@ public class SakuraBalloon
 
 		File balloonHome = new File(nar.getProperty("balloon.directory"));
 		log.debug("balloon=" + balloonHome);
+
+		// descript
 		descript = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.descript"))).readDescript();
 		log.debug("descript=" + descript);
 
+		{
+			int x = Integer.parseInt(descript.getProperty("origin.x", "0"));
+			int y = Integer.parseInt(descript.getProperty("origin.y", "0"));
+			origin = new Point(x, y);
+			log.debug("origin=" + origin);
+		}
+
+		{
+			int left = Integer.parseInt(descript.getProperty("validrect.left", "0"));
+			int top = Integer.parseInt(descript.getProperty("validrect.top", "0"));
+			int right = Integer.parseInt(descript.getProperty("validrect.right", "0"));
+			int bottom = Integer.parseInt(descript.getProperty("validrect.bottom", "0"));
+			Point validrect = new Point(left, top);
+			Point validrectEnd = new Point(right, bottom);
+			log.debug("validrect=" + validrect + "," + validrectEnd);
+		}
+
+		{
+			int x = Integer.parseInt(descript.getProperty("wordwrappoint.x", "0"));
+			int y = Integer.parseInt(descript.getProperty("wordwrappoint.y", "0"));
+			wordwrappoint = new Point(x, y);
+			log.debug("wordwrappoint=" + wordwrappoint);
+		}
+
+		{
+			String face = descript.getProperty("font.height");
+			int height = Integer.parseInt(descript.getProperty("font.height", "0"));
+			int r = Integer.parseInt(descript.getProperty("font.color.r", "0"));
+			int g = Integer.parseInt(descript.getProperty("font.color.g", "0"));
+			int b = Integer.parseInt(descript.getProperty("font.color.b", "0"));
+			font = new Font(face, Font.PLAIN, height);
+			fontColor = new Color(r, g, b);
+			log.debug("font=" + font + "," + fontColor);
+		}
+
+		{
+			int x = Integer.parseInt(descript.getProperty("arrow0.x", "0"));
+			int y = Integer.parseInt(descript.getProperty("arrow0.y", "0"));
+			BufferedImage image = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.arrow0"))).readImage();
+			arrow0 = new SakuraSurface(image);
+			arrow0.setLocation(x, y);
+			log.debug("arrow0=" + arrow0);
+		}
+
+		{
+			int x = Integer.parseInt(descript.getProperty("arrow1.x", "0"));
+			int y = Integer.parseInt(descript.getProperty("arrow1.y", "0"));
+			BufferedImage image = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.arrow1"))).readImage();
+			arrow1 = new SakuraSurface(image);
+			arrow1.setLocation(x, y);
+			log.debug("arrow1=" + arrow1);
+		}
+
+		{
+			int x = Integer.parseInt(descript.getProperty("onlinemarker.x", "0"));
+			int y = Integer.parseInt(descript.getProperty("onlinemarker.y", "0"));
+			BufferedImage image = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.onlinemarker"))).readImage();
+			onlinemarker = new SakuraSurface(image);
+			onlinemarker.setLocation(x, y);
+			log.debug("onlinemarker=" + onlinemarker);
+		}
+
+		{
+			int x = Integer.parseInt(descript.getProperty("sstpmarker.x", "0"));
+			int y = Integer.parseInt(descript.getProperty("sstpmarker.y", "0"));
+			BufferedImage image = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.sstpmarker"))).readImage();
+			sstpmarker = new SakuraSurface(image);
+			sstpmarker.setLocation(x, y);
+			log.debug("sstpmarker=" + sstpmarker);
+		}
+
+		// surface
 		String pat;
 		if (name.equals("sakura"))
 		{
@@ -138,6 +237,27 @@ public class SakuraBalloon
 	}
 
 	/**
+	 * 表示文字列をクリアします。
+	 */
+	public void clearString()
+	{
+		
+	}
+
+	/**
+	 * 表示文字列を追加します。
+	 * 
+	 * @param str 文字列
+	 */
+	public void drawString(CharSequence str)
+	{
+		for (int i = 0; i < str.length(); i++)
+		{
+//			char c = str.charAt(i);
+		}
+	}
+
+	/**
 	 * バルーンを描画します。
 	 * 
 	 * @param g Graphics2D コンテキスト
@@ -146,7 +266,6 @@ public class SakuraBalloon
 	{
 		log.trace("draw balloon: " + name + ", " + g.getTransform());
 //		g.setClip(null);
-		g.setColor(Color.black);
 		if (surface != null)
 		{
 //			AffineTransform t = g.getTransform();
@@ -156,7 +275,14 @@ public class SakuraBalloon
 			x += -rect.width;
 			g.translate(x, y);
 			surface.draw(g);
+			arrow0.draw(g);
+			arrow1.draw(g);
+//			onlinemarker.draw(g);
+			sstpmarker.draw(g);
 		}
+
+		g.setFont(font);
+		g.setColor(fontColor);
 		g.drawString(toString(), 8, 16);
 	}
 
