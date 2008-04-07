@@ -65,7 +65,7 @@ public class SakuraScript
 	public Object eval(String script)
 	{
 		StringBuilder result = new StringBuilder();
-		System.out.println("script=" + script);
+		log.info("script=" + script);
 		Scanner s = new Scanner(script).useDelimiter("\\\\");
 		while (s.hasNext())
 		{
@@ -101,6 +101,14 @@ public class SakuraScript
 	protected void call(String command, String... options)
 	{
 		log.debug("call: " + command + "," + java.util.Arrays.toString(options));
+		if (command.equals("0"))
+		{
+			ghost.setScope(0);
+		}
+		else if (command.equals("1"))
+		{
+			ghost.setScope(1);
+		}
 	}
 
 	/**
@@ -111,7 +119,7 @@ public class SakuraScript
 	protected void talk(String message)
 	{
 		log.debug("talk: " + message);
-//		ghost.talk(message);
+		if (ghost != null) ghost.talk(message);
 	}
 
 	/**

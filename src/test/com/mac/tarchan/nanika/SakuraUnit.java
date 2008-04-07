@@ -10,6 +10,8 @@ package test.com.mac.tarchan.nanika;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.mac.tarchan.nanika.SakuraGhost;
 import com.mac.tarchan.nanika.SakuraScript;
 
 /**
@@ -18,7 +20,7 @@ import com.mac.tarchan.nanika.SakuraScript;
  * @since 1.0
  * @author tarchan
  */
-public class SakuraUnit
+public class SakuraUnit implements SakuraGhost
 {
 	/**
 	 * メイン
@@ -50,6 +52,7 @@ public class SakuraUnit
 	public void init()
 	{
 		sakura = new SakuraScript();
+		sakura.put("ghost", new SakuraUnit());
 	}
 
 	/** こんにちは */
@@ -63,7 +66,7 @@ public class SakuraUnit
 	@Test
 	public void post()
 	{
-		assertEquals("0s1s0wwn_wn1ww_w_wnn0e", sakura.eval("\\0\\s[0]\\1\\s[10]\\0普通のポストで終わりたくないなぁ…\\w2…\\w2\\n\\_w[126]\\n[half]\\1…\\w2…\\w2っていうかお前、\\_w[78]自分を普通だと思ってたのか。\\_w[84]\\n\\n[half]\\0え？\\e "));
+		assertEquals("0s1s0wwn_wn1ww_w_wnn0e", sakura.eval("\\0\\s[0]\\1\\s[10]\\0普通のポストで終わりたくないなぁ…\\w2…\\w2\\n\\_w[126]\\n[half]\\1…\\w2…\\w2っていうかお前、\\_w[78]自分を普通だと思ってたのか。\\_w[84]\\n\\n[half]\\0え？\\e"));
 	}
 
 	/** 選択肢 */
@@ -99,5 +102,65 @@ public class SakuraUnit
 	public void yen_e()
 	{
 		assertEquals("e", sakura.eval("えんいー\\e"));
+	}
+
+	/** スコープ */
+	private int scope;
+
+	/**
+	 * スコープを変更します。
+	 * 
+	 * @param scope スコープ番号
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost setScope(int scope)
+	{
+		this.scope = scope;
+		return this;
+	}
+
+	/**
+	 * 現在のスコープのサーフェスを変更します。
+	 * 
+	 * @param id サーフェス ID
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost setSurface(int id)
+	{
+		return this;
+	}
+
+	/**
+	 * 現在のスコープのバルーンサーフェスを変更します。
+	 * 
+	 * @param id バルーンサーフェス ID
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost setBalloonSurface(int id)
+	{
+		return this;
+	}
+
+	/**
+	 * 現在のスコープのバルーンにメッセージを表示します。
+	 * 
+	 * @param message メッセージ
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost talk(String message)
+	{
+		String pre = scope == 0 ? "さ：" : "う：";
+		System.out.format("%s\"%s\"\n", pre, message);
+		return this;
+	}
+
+	/**
+	 * ゴーストの姿を消します。
+	 * 
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost vanish()
+	{
+		return this;
 	}
 }

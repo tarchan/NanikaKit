@@ -101,11 +101,11 @@ public class NanikaMini extends Canvas
 				ghost.install(name);
 			}
 
-			// ゴーストを実体化
-			ghost.materialize();
-
 			// サムネールを取得
 			thumbnail = ghost.getThumbnail();
+
+			// ゴーストを実体化
+			ghost.materialize();
 
 //			String readme = nar.getReadme();
 //			log.debug("readme=" + readme);

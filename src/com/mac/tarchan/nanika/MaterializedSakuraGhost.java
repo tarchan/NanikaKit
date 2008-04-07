@@ -1,5 +1,5 @@
 /*
- * NanikaGhost.java
+ * MaterializedSakuraGhost.java
  * NanikaKit
  *
  * Created by tarchan on 2008/03/29.
@@ -53,7 +53,7 @@ public class MaterializedSakuraGhost implements SakuraGhost
 	 * @return このゴーストへの参照
 	 * @throws IOException インストール中にエラーが発生した場合
 	 */
-	public SakuraGhost install(String name) throws IOException
+	public MaterializedSakuraGhost install(String name) throws IOException
 	{
 		NanikaArchive newNar = new NanikaArchive(name);
 		if (currentNar == null) currentNar = newNar;
@@ -70,7 +70,7 @@ public class MaterializedSakuraGhost implements SakuraGhost
 	 * 
 	 * @return このゴーストへの参照
 	 */
-	public SakuraGhost materialize()
+	public MaterializedSakuraGhost materialize()
 	{
 		// loading
 		log.info("starting up engine");
@@ -159,7 +159,7 @@ public class MaterializedSakuraGhost implements SakuraGhost
 	 * 
 	 * @return このゴーストへの参照
 	 */
-	public SakuraGhost vanish()
+	public MaterializedSakuraGhost vanish()
 	{
 		log.info("vanish");
 		nar.clear();
@@ -176,7 +176,7 @@ public class MaterializedSakuraGhost implements SakuraGhost
 	 * @param scope スコープ番号
 	 * @return このゴーストへの参照
 	 */
-	public SakuraGhost setScope(int scope)
+	public MaterializedSakuraGhost setScope(int scope)
 	{
 		currentShell = shell.get(scope);
 
@@ -189,7 +189,7 @@ public class MaterializedSakuraGhost implements SakuraGhost
 	 * @param id サーフェス ID
 	 * @return このゴーストへの参照
 	 */
-	public SakuraGhost setSurface(int id)
+	public MaterializedSakuraGhost setSurface(int id)
 	{
 		if (currentShell != null) currentShell.setSurface(id);
 
@@ -202,7 +202,7 @@ public class MaterializedSakuraGhost implements SakuraGhost
 	 * @param id バルーンサーフェス ID
 	 * @return このゴーストへの参照
 	 */
-	public SakuraGhost setBalloonSurface(int id)
+	public MaterializedSakuraGhost setBalloonSurface(int id)
 	{
 		if (currentShell != null)
 		{
@@ -217,10 +217,13 @@ public class MaterializedSakuraGhost implements SakuraGhost
 	 * 現在のスコープのバルーンにメッセージを表示します。
 	 * 
 	 * @param message メッセージ
+	 * @return このゴーストへの参照
 	 */
-	public void talk(String message)
+	public MaterializedSakuraGhost talk(String message)
 	{
 		log.debug(message);
+
+		return this;
 	}
 
 	/**

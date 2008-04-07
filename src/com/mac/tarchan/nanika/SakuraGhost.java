@@ -1,5 +1,5 @@
 /*
- * ISakura.java
+ * SakuraGhost.java
  * NanikaKit
  *
  * Created by tarchan on 2008/04/07.
@@ -8,12 +8,13 @@
 package com.mac.tarchan.nanika;
 
 /**
+ * GHOST インターフェースを表します。
+ * 
  * @since 1.0
  * @author tarchan
  */
 public interface SakuraGhost
 {
-
 	/**
 	 * スコープを変更します。
 	 * 
@@ -42,8 +43,9 @@ public interface SakuraGhost
 	 * 現在のスコープのバルーンにメッセージを表示します。
 	 * 
 	 * @param message メッセージ
+	 * @return このゴーストへの参照
 	 */
-	public abstract void talk(String message);
+	public abstract SakuraGhost talk(String message);
 
 	/**
 	 * ゴーストの姿を消します。
