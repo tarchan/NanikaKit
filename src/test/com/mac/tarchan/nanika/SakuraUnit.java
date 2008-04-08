@@ -7,11 +7,11 @@
  */
 package test.com.mac.tarchan.nanika;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mac.tarchan.nanika.SakuraGhost;
 import com.mac.tarchan.nanika.SakuraScript;
 
 /**
@@ -20,7 +20,7 @@ import com.mac.tarchan.nanika.SakuraScript;
  * @since 1.0
  * @author tarchan
  */
-public class SakuraUnit implements SakuraGhost
+public class SakuraUnit
 {
 	/**
 	 * メイン
@@ -99,7 +99,7 @@ public class SakuraUnit implements SakuraGhost
 
 	/** えんいー */
 	@Test
-	public void yen_e()
+	public void yene()
 	{
 		assertEquals("e", sakura.eval("えんいー\\e"));
 	}
@@ -113,31 +113,9 @@ public class SakuraUnit implements SakuraGhost
 	 * @param scope スコープ番号
 	 * @return このゴーストへの参照
 	 */
-	public SakuraGhost setScope(int scope)
+	public SakuraUnit setScope(int scope)
 	{
 		this.scope = scope;
-		return this;
-	}
-
-	/**
-	 * 現在のスコープのサーフェスを変更します。
-	 * 
-	 * @param id サーフェス ID
-	 * @return このゴーストへの参照
-	 */
-	public SakuraGhost setSurface(int id)
-	{
-		return this;
-	}
-
-	/**
-	 * 現在のスコープのバルーンサーフェスを変更します。
-	 * 
-	 * @param id バルーンサーフェス ID
-	 * @return このゴーストへの参照
-	 */
-	public SakuraGhost setBalloonSurface(int id)
-	{
 		return this;
 	}
 
@@ -147,20 +125,10 @@ public class SakuraUnit implements SakuraGhost
 	 * @param message メッセージ
 	 * @return このゴーストへの参照
 	 */
-	public SakuraGhost talk(String message)
+	public SakuraUnit talk(String message)
 	{
 		String pre = scope == 0 ? "さ：" : "う：";
 		System.out.format("%s\"%s\"\n", pre, message);
-		return this;
-	}
-
-	/**
-	 * ゴーストの姿を消します。
-	 * 
-	 * @return このゴーストへの参照
-	 */
-	public SakuraGhost vanish()
-	{
 		return this;
 	}
 }

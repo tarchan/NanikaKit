@@ -7,6 +7,8 @@
  */
 package com.mac.tarchan.nanika;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,10 +28,10 @@ public class SakuraScript
 	private static final Log log = LogFactory.getLog(SakuraScript.class);
 
 	/** ゴースト */
-	private SakuraGhost ghost;
+	protected Object ghost;
 
 	/** システム */
-	private Object system;
+	protected Object system;
 
 	/**
 	 * キーにマップする値を設定します。
@@ -42,7 +44,7 @@ public class SakuraScript
 	{
 		if ("ghost".equals(name))
 		{
-			ghost = (SakuraGhost)value;
+			ghost = value;
 		}
 		else if ("system".equals(name))
 		{
@@ -103,11 +105,55 @@ public class SakuraScript
 		log.debug("call: " + command + "," + java.util.Arrays.toString(options));
 		if (command.equals("0"))
 		{
-			ghost.setScope(0);
+//			ghost.setScope(0);
+			invoke(ghost, "setScope", 0);
 		}
 		else if (command.equals("1"))
 		{
-			ghost.setScope(1);
+//			ghost.setScope(1);
+			invoke(ghost, "setScope", 1);
+		}
+		else if (command.equals("s"))
+		{
+			int i = Integer.parseInt(options[1]);
+//			ghost.setSurface(i);
+			invoke(ghost, "setSurface", i);
+		}
+		else if (command.equals("b"))
+		{
+			int i = Integer.parseInt(options[1]);
+//			ghost.setBalloonSurface(i);
+			invoke(ghost, "setBalloonSurface", i);
+		}
+		else if (command.equals("n"))
+		{
+			String s = options[1];
+//			if ("half".equals(s)) ghost.halfLine();
+//			else ghost.newLine();
+			if ("half".equals(s)) invoke(ghost, "halfLine");
+			else invoke(ghost, "newLine");
+		}
+		else if (command.equals("w"))
+		{
+			long i = Long.parseLong(options[0]);
+//			ghost.await(50 * i);
+			invoke(ghost, "waitTime", 50 * i);
+		}
+		else if (command.equals("_w"))
+		{
+			long i = Long.parseLong(options[1]);
+//			ghost.await(i);
+			invoke(ghost, "waitTime", i);
+		}
+		else if (command.equals("c"))
+		{
+//			ghost.clear();
+			invoke(ghost, "clear");
+		}
+		else if (command.equals("e"))
+		{
+//			ghost.yen_e();
+			invoke(ghost, "yen_e");
 		}
 	}
 
@@ -118,8 +164,52 @@ public class SakuraScript
 	 */
 	protected void talk(String message)
 	{
-		log.debug("talk: " + message);
-		if (ghost != null) ghost.talk(message);
+//		log.debug("talk: " + message);
+//		if (ghost != null) ghost.talk(message);
+		invoke(ghost, "talk", message);
+	}
+
+	/**
+	 * ターゲットのメソッドを実行します。
+	 * 
+	 * @param target ターゲット
+	 * @param name メソッド名
+	 * @param args 引数
+	 */
+	protected void invoke(Object target, String name, Object... args)
+	{
+		try
+		{
+			log.debug(String.format("%s%s", name, Arrays.toString(args)));
+			Class<?>[] cls;
+			if (args != null)
+			{
+				cls = new Class[args.length];
+				int i = 0;
+				for (Object obj : args)
+				{
+					Class<?> c;
+					if (obj instanceof Integer) c = int.class;
+					else if (obj instanceof Long) c = long.class;
+					else c = obj.getClass();
+					cls[i++] = c;
+				}
+			}
+			else
+			{
+				cls = null;
+			}
+			Method method = target.getClass().getMethod(name, cls);
+			method.invoke(target, args);
+		}
+		catch (NoSuchMethodException e)
+		{
+			log.trace(e.toString());
+		}
+		catch (Exception e)
+		{
+			log.error("invoke method error", e);
+		}
 	}
 
 	/**
