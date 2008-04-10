@@ -23,7 +23,7 @@
 
 	<target name="compile">
 		<mkdir dir="${build.bin}" />
-		<javac srcdir="${build.src}" destdir="${build.bin}" encoding="UTF-8">
+		<javac srcdir="${build.src}" destdir="${build.bin}" encoding="UTF-8" debug="true">
 			<classpath refid="build.class.path" />
 		</javac>
 		<copy todir="${build.bin}" overwrite="true">
