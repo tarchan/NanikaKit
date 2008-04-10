@@ -92,6 +92,17 @@ public class SakuraGhost
 	}
 
 	/**
+	 * 定期的に SHIORI にリクエストを送ります。
+	 */
+	public void requestForSecond()
+	{
+		String script = shiori.request("OnSecondChange");
+		SakuraScript sakura = new SakuraScript();
+		sakura.put("ghost", this);
+		sakura.eval(script);
+	}
+
+	/**
 	 * SHIORI サブシステムをロードします。
 	 */
 	private void loadShiori()
@@ -101,7 +112,7 @@ public class SakuraGhost
 		log.debug("SHIORI=" + shioriSubsystem);
 
 		shiori = new SakuraShiori();
-		shiori.getTalk();
+		shiori.request("OnBoot");
 	}
 
 	/**

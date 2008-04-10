@@ -46,7 +46,7 @@ public class SakuraBalloon
 	private Properties descript;
 
 	/** 表示オフセット */
-	private Point offset = new Point();
+	private Point offset = new Point(0, 0);
 
 	/** 表示位置 */
 	private String align;
@@ -139,7 +139,7 @@ public class SakuraBalloon
 			int x = Integer.parseInt(descript.getProperty("arrow0.x", "0"));
 			int y = Integer.parseInt(descript.getProperty("arrow0.y", "0"));
 			BufferedImage image = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.arrow0"))).readImage();
-			arrow0 = new SakuraSurface(image);
+			arrow0 = new SakuraSurface("arrow0", image);
 			arrow0.setLocation(x, y);
 			log.debug("arrow0=" + arrow0);
 		}
@@ -148,7 +148,7 @@ public class SakuraBalloon
 			int x = Integer.parseInt(descript.getProperty("arrow1.x", "0"));
 			int y = Integer.parseInt(descript.getProperty("arrow1.y", "0"));
 			BufferedImage image = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.arrow1"))).readImage();
-			arrow1 = new SakuraSurface(image);
+			arrow1 = new SakuraSurface("arrow1", image);
 			arrow1.setLocation(x, y);
 			log.debug("arrow1=" + arrow1);
 		}
@@ -157,7 +157,7 @@ public class SakuraBalloon
 			int x = Integer.parseInt(descript.getProperty("onlinemarker.x", "0"));
 			int y = Integer.parseInt(descript.getProperty("onlinemarker.y", "0"));
 			BufferedImage image = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.onlinemarker"))).readImage();
-			onlinemarker = new SakuraSurface(image);
+			onlinemarker = new SakuraSurface("onlinemarker", image);
 			onlinemarker.setLocation(x, y);
 			log.debug("onlinemarker=" + onlinemarker);
 		}
@@ -166,7 +166,7 @@ public class SakuraBalloon
 			int x = Integer.parseInt(descript.getProperty("sstpmarker.x", "0"));
 			int y = Integer.parseInt(descript.getProperty("sstpmarker.y", "0"));
 			BufferedImage image = nar.getEntry(new File(balloonHome, nar.getProperty("balloon.sstpmarker"))).readImage();
-			sstpmarker = new SakuraSurface(image);
+			sstpmarker = new SakuraSurface("sstpmarker", image);
 			sstpmarker.setLocation(x, y);
 			log.debug("sstpmarker=" + sstpmarker);
 		}
@@ -198,7 +198,7 @@ public class SakuraBalloon
 //			surfaces.put(id, nar.getSurface(id));
 			log.debug("entry=" + n + "," + id);
 			BufferedImage image = entry.readImage();
-			surfaces.put(id, new SakuraSurface(id, image));
+			surfaces.put(id, new SakuraSurface(new File(n).getName(), image));
 		}
 	}
 
@@ -264,21 +264,29 @@ public class SakuraBalloon
 	 */
 	public void draw(Graphics2D g)
 	{
-		log.trace("draw balloon: " + name + ", " + g.getTransform());
+		log.trace("draw balloon: " + name + ", " + g.getTransform() + ", " + surface);
 //		g.setClip(null);
 		if (surface != null)
 		{
 //			AffineTransform t = g.getTransform();
 			Rectangle rect = surface.getBounds();
+			log.trace("rect=" + rect);
+//			offset.setBounds(rect);
+			log.debug("offset=" + offset);
 			int x = offset.x;
 			int y = offset.y;
 			x += -rect.width;
 			g.translate(x, y);
 			surface.draw(g);
-			arrow0.draw(g);
-			arrow1.draw(g);
-//			onlinemarker.draw(g);
-			sstpmarker.draw(g);
+
+//			g.setColor(Color.red);
+//			g.draw(rect);
+
+			// オプション
+			arrow0.draw(g, rect);
+			arrow1.draw(g, rect);
+			onlinemarker.draw(g, rect);
+			sstpmarker.draw(g, rect);
 		}
 
 		g.setFont(font);

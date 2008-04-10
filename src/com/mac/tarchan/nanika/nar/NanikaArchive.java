@@ -246,7 +246,7 @@ public class NanikaArchive
 			log.debug("image=" + image.getWidth() + "x" + image.getHeight() + ","  + image.getType() + "," + image.getColorModel());
 			int rgb = image.getRGB(0, 0);
 			log.debug("rgb=0x" + Integer.toHexString(rgb));
-			SakuraSurface surface = new SakuraSurface(id, image);
+			SakuraSurface surface = new SakuraSurface("" + id, image);
 			return surface;
 		}
 		catch (IOException e)

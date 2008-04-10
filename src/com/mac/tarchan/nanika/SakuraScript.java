@@ -64,7 +64,7 @@ public class SakuraScript
 	 * @param script さくらスクリプト
 	 * @return さくらスクリプトの実行によって返される値
 	 */
-	public Object eval(String script)
+	public String eval(String script)
 	{
 		StringBuilder result = new StringBuilder();
 		log.info("script=" + script);
@@ -73,14 +73,16 @@ public class SakuraScript
 		{
 			String next = s.next();
 //			System.out.println("next=" + next);
-			Pattern p = Pattern.compile("^([01sbnwcxteq*&iv45m!\\-]|_w|_q|_s|_n|_l|_u|_m|_v|_V)([0-9]|\\[(.+)\\])?(.*)");
+			Pattern p = Pattern.compile("^([01sbnwcxteq*&iv45m!\\-]|_w|_q|_s|_n|_l|_u|_m|_v|_V)([0-9]|\\[(.+)\\])?(.+)?");
 			Matcher m = p.matcher(next);
 			if (m.find())
 			{
 //				System.out.format("match=%s/%s/%s/%s/\"%s\"\n", m.group(0), m.group(1), m.group(2), m.group(3), m.group(4));
-				call(m.group(1), m.group(2), m.group(3));
-				if (m.group(4).length() > 0) talk(m.group(4));
 				result.append(m.group(1));
+
+				// えんいーの場合は評価を終了
+				if (call(m.group(1), m.group(2), m.group(3))) break;
+				if (m.group(4) != null) talk(m.group(4));
 			}
 			else
 			{
@@ -95,66 +97,141 @@ public class SakuraScript
 	}
 
 	/**
-	 * コマンドを実行します。
+	 * さくらスクリプトを実行します。
 	 * 
-	 * @param command コマンド
-	 * @param options オプション
+	 * @param op 操作コード
+	 * @param value 1 ケタ引数
+	 * @param detail 角カッコ引数
+	 * @return えんいーの場合は true
 	 */
-	protected void call(String command, String... options)
+	protected boolean call(String op, String value, String detail)
 	{
-		log.debug("call: " + command + "," + java.util.Arrays.toString(options));
-		if (command.equals("0"))
+		log.debug(String.format("call: %s(%s, %s)", op, value, detail));
+		if (op.equals("0"))
 		{
-//			ghost.setScope(0);
 			invoke(ghost, "setScope", 0);
 		}
-		else if (command.equals("1"))
+		else if (op.equals("1"))
 		{
-//			ghost.setScope(1);
 			invoke(ghost, "setScope", 1);
 		}
-		else if (command.equals("s"))
+		else if (op.equals("s"))
 		{
-			int i = Integer.parseInt(options[1]);
-//			ghost.setSurface(i);
+			int i = Integer.parseInt(detail != null ? detail : value);
 			invoke(ghost, "setSurface", i);
 		}
-		else if (command.equals("b"))
+		else if (op.equals("b"))
 		{
-			int i = Integer.parseInt(options[1]);
-//			ghost.setBalloonSurface(i);
+			int i = Integer.parseInt(detail);
 			invoke(ghost, "setBalloonSurface", i);
 		}
-		else if (command.equals("n"))
+		else if (op.equals("n"))
 		{
-			String s = options[1];
-//			if ("half".equals(s)) ghost.halfLine();
-//			else ghost.newLine();
-			if ("half".equals(s)) invoke(ghost, "halfLine");
+			if ("half".equals(detail)) invoke(ghost, "halfLine");
 			else invoke(ghost, "newLine");
 		}
-		else if (command.equals("w"))
+		else if (op.equals("w"))
 		{
-			long i = Long.parseLong(options[0]);
-//			ghost.await(50 * i);
+			long i = Long.parseLong(value);
 			invoke(ghost, "waitTime", 50 * i);
 		}
-		else if (command.equals("_w"))
+		else if (op.equals("_w"))
 		{
-			long i = Long.parseLong(options[1]);
-//			ghost.await(i);
+			long i = Long.parseLong(detail);
 			invoke(ghost, "waitTime", i);
 		}
-		else if (command.equals("c"))
+		else if (op.equals("c"))
 		{
-//			ghost.clear();
+			// 表示域クリア
 			invoke(ghost, "clear");
 		}
-		else if (command.equals("e"))
+		else if (op.equals("x"))
 		{
-//			ghost.yen_e();
-			invoke(ghost, "yen_e");
+			// 表示一時停止、クリック待ち。
+			invoke(ghost, "waitClick");
 		}
+		else if (op.equals("t"))
+		{
+			// タイムクリティカルセクション
+			invoke(ghost, "timeSession");
+		}
+		else if (op.equals("_q"))
+		{
+			// クイックセクション
+			invoke(ghost, "quickSession");
+		}
+		else if (op.equals("_s"))
+		{
+			// シンクロナイズセクション
+			invoke(ghost, "syncSession");
+		}
+		else if (op.equals("_n"))
+		{
+			// 自動改行のスイッチ
+			invoke(ghost, "autoLine");
+		}
+		else if (op.equals("_l"))
+		{
+			// カーソル位置の絶対指定
+			String[] loc = detail.split(",");
+			int x = Integer.parseInt(loc[0]);
+			int y = Integer.parseInt(loc[1]);
+			invoke(ghost, "setCursorLocation", x, y);
+		}
+		else if (op.equals("e"))
+		{
+			// えんいー
+			return true;
+		}
+		else if (op.equals("_v"))
+		{
+			// オーディオファイルを再生
+			invoke(system, "playSound", detail);
+		}
+		else if (op.equals("_V"))
+		{
+			// オーディオファイルの再生終了を待つ
+			invoke(system, "waitSound");
+		}
+		else if (op.equals("i"))
+		{
+			// アニメーションパターンを発動
+			long i = Long.parseLong(detail);
+			invoke(ghost, "startAnimation", i);
+		}
+		else if (op.equals("v"))
+		{
+			// フォアグラウンドへ
+			invoke(ghost, "toFront");
+		}
+		else if (op.equals("4"))
+		{
+			// 離れる方向に移動
+			invoke(ghost, "on4");
+		}
+		else if (op.equals("5"))
+		{
+			// 接触する方向に移動
+			invoke(ghost, "on5");
+		}
+		else if (op.equals("-"))
+		{
+			// 即終了
+			invoke(ghost, "vanish");
+			return true;
+		}
+		else if (op.equals("!"))
+		{
+			// open, set, raise, change ...
+			String[] args = detail.split(",");
+			invoke(system, args[0]);
+		}
+		else
+		{
+			invoke(ghost, op, value, detail);
+		}
+
+		return false;
 	}
 
 	/**

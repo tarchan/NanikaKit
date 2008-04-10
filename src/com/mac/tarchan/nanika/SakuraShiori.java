@@ -7,6 +7,8 @@
  */
 package com.mac.tarchan.nanika;
 
+import com.mac.tarchan.nanika.nar.NanikaArchive;
+
 /**
  * SHIORI を実装します。
  * 
@@ -16,12 +18,44 @@ package com.mac.tarchan.nanika;
 public class SakuraShiori
 {
 	/**
+	 * SHIORI をロードします。
+	 * 
+	 * @param nar NAR ファイル
+	 * @return ロードできた場合は true、そうでない場合は false
+	 */
+	public boolean load(NanikaArchive nar)
+	{
+		return true;
+	}
+
+	/**
+	 * このモジュールのバージョンを返します。
+	 * 
+	 * @return バージョン文字列
+	 */
+	public String getModuleVersion()
+	{
+		return "SHIORI/3.0";
+	}
+
+	/**
 	 * さくらスクリプトを返します。
 	 * 
+	 * @param command コマンド
 	 * @return さくらスクリプト
 	 */
-	public String getTalk()
+	public String request(String command)
 	{
 		return "\\0\\s[0]こんにちは。\\1\\s[10]よぉ。\\e";
+	}
+
+	/**
+	 * SHIORI をアンロードします。
+	 * 
+	 * @return アンロードできた場合は true、そうでない場合は false
+	 */
+	public boolean unload()
+	{
+		return true;
 	}
 }

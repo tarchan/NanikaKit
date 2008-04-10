@@ -23,6 +23,7 @@ import java.awt.image.FilteredImageSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.mac.tarchan.geom.WrappedPoint;
 import com.mac.tarchan.image.ChromakeyImageFilter;
 
 /**
@@ -37,13 +38,13 @@ public class SakuraSurface implements Shape
 	private static final Log log = LogFactory.getLog(SakuraSurface.class);
 
 	/** サーフェス ID */
-	private int id;
+	private final String id;
 
 	/** イメージ */
 	private BufferedImage image;
 
 	/** 矩形 */
-	private Rectangle rect;
+	private final Rectangle rect;
 
 	/**
 	 * サーフェスを構築します。
@@ -51,21 +52,11 @@ public class SakuraSurface implements Shape
 	 * @param id サーフェス ID
 	 * @param image サーフェスイメージ
 	 */
-	public SakuraSurface(int id, BufferedImage image)
+	public SakuraSurface(String id, BufferedImage image)
 	{
 		this.id = id;
 		this.image = image;
 		this.rect = new Rectangle(0, 0, image.getWidth(), image.getHeight());
-	}
-
-	/**
-	 * サーフェスを構築します。
-	 * 
-	 * @param image サーフェスイメージ
-	 */
-	public SakuraSurface(BufferedImage image)
-	{
-		this(-1, image);
 	}
 
 	/**
@@ -96,7 +87,7 @@ public class SakuraSurface implements Shape
 	 */
 	public String toString()
 	{
-		return String.format("%s[%dx%d, 0x%x]", id, rect.width, rect.height, image.getRGB(0, 0));
+		return String.format("%s[%d, %d, %dx%d, 0x%x]", id, rect.x, rect.y, rect.width, rect.height, image.getRGB(0, 0));
 	}
 
 	/**
@@ -106,12 +97,32 @@ public class SakuraSurface implements Shape
 	 */
 	public void draw(Graphics2D g)
 	{
+		draw(g, null);
+	}
+
+	/**
+	 * このサーフェスのイメージを描画します。
+	 * 
+	 * @param g Graphics2D コンテキスト
+	 * @param bounds 描画範囲
+	 */
+	public void draw(Graphics2D g, Rectangle bounds)
+	{
+		log.trace("draw surface: " + rect);
 //		Rectangle rect = getBounds();
 //		g.drawImage(image, null, rect.x, rect.y);
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		ChromakeyImageFilter chromakey = new ChromakeyImageFilter(getBackground().getRGB());
 		Image img = tk.createImage(new FilteredImageSource(image.getSource(), chromakey));
-		g.drawImage(img, rect.x, rect.y, null);
+		if (bounds != null)
+		{
+			WrappedPoint point = new WrappedPoint(rect.x, rect.y).setBounds(bounds);
+			g.drawImage(img, point.x, point.y, null);
+		}
+		else
+		{
+			g.drawImage(img, rect.x, rect.y, null);
+		}
 	}
 
 	/**
