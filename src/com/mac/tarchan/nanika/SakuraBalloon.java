@@ -12,6 +12,9 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -127,6 +130,7 @@ public class SakuraBalloon
 		{
 			String face = descript.getProperty("font.height");
 			int height = Integer.parseInt(descript.getProperty("font.height", "0"));
+			height = 24;
 			int r = Integer.parseInt(descript.getProperty("font.color.r", "0"));
 			int g = Integer.parseInt(descript.getProperty("font.color.g", "0"));
 			int b = Integer.parseInt(descript.getProperty("font.color.b", "0"));
@@ -236,12 +240,15 @@ public class SakuraBalloon
 		else surface = null;
 	}
 
+	/** メッセージバッファ */
+	private String buf = "";
+
 	/**
 	 * 表示文字列をクリアします。
 	 */
 	public void clearString()
 	{
-		
+		buf = "";
 	}
 
 	/**
@@ -251,6 +258,7 @@ public class SakuraBalloon
 	 */
 	public void drawString(CharSequence str)
 	{
+		buf += str.toString();
 		for (int i = 0; i < str.length(); i++)
 		{
 //			char c = str.charAt(i);
@@ -272,6 +280,7 @@ public class SakuraBalloon
 			Rectangle rect = surface.getBounds();
 			log.trace("rect=" + rect);
 //			offset.setBounds(rect);
+			log.debug("origin=" + origin);
 			log.debug("offset=" + offset);
 			int x = offset.x;
 			int y = offset.y;
@@ -287,11 +296,17 @@ public class SakuraBalloon
 			arrow1.draw(g, rect);
 			onlinemarker.draw(g, rect);
 			sstpmarker.draw(g, rect);
-		}
 
-		g.setFont(font);
-		g.setColor(fontColor);
-		g.drawString(toString(), 8, 16);
+			g.setFont(font);
+			g.setColor(fontColor);
+//			String s = toString();
+			String s = buf;
+			FontRenderContext frc = g.getFontRenderContext();
+			LineMetrics lm = font.getLineMetrics(s, frc);
+			Rectangle2D fr = font.getStringBounds(s, frc);
+			log.debug("font=" + lm + ", " + frc + ", " + fr);
+			g.drawString(s, origin.x, origin.y + font.getSize());
+		}
 	}
 
 	/**

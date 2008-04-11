@@ -87,7 +87,7 @@ public class SakuraShell
 		// descript
 		try
 		{
-			descript = nar.getEntry(new File(shellHome, nar.getProperty("nanika.shell.descript"))).readDescript();
+			descript = nar.getEntry(new File(shellHome, nar.getProperty("shell.descript"))).readDescript();
 			log.debug("descript=" + descript);
 		}
 		catch (IOException e)

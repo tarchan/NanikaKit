@@ -70,9 +70,9 @@ public class NanikaArchive
 			properties.putAll(installDesc);
 		}
 
-		NanikaEntry ghost = getEntry(new File(getGhostHome(), getProperty("nanika.ghost.descript")));
+		NanikaEntry ghost = getEntry(new File(getGhostHome(), getProperty("ghost.descript")));
 		log.debug("ghost=" + ghost);
-		NanikaEntry shell = getEntry(new File(getShellHome(), getProperty("nanika.shell.descript")));
+		NanikaEntry shell = getEntry(new File(getShellHome(), getProperty("shell.descript")));
 		log.debug("shell=" + shell);
 	}
 
@@ -91,16 +91,15 @@ public class NanikaArchive
 		defaults.setProperty("nanika.thumbnail", "thumbnail.png");
 
 		// ghost
-		defaults.setProperty("nanika.ghost", "ghost");
-		defaults.setProperty("nanika.ghost.home", "master");
-		defaults.setProperty("nanika.ghost.descript", "descript.txt");
-		defaults.setProperty("nanika.ghost.thumbnail", "thumbnail.png");
+		defaults.setProperty("ghost.directory", new File("ghost", "master").getPath());
+		defaults.setProperty("ghost.descript", "descript.txt");
+		defaults.setProperty("ghost.thumbnail", "thumbnail.png");
 
 		// shell
-		defaults.setProperty("nanika.shell", "shell");
-		defaults.setProperty("nanika.shell.home", "master");
-		defaults.setProperty("nanika.shell.descript", "descript.txt");
-		defaults.setProperty("nanika.shell.surfaces", "surfaces.txt");
+		defaults.setProperty("shell.root", "shell");
+		defaults.setProperty("shell.home", "master");
+		defaults.setProperty("shell.descript", "descript.txt");
+		defaults.setProperty("shell.surfaces", "surfaces.txt");
 
 		// balloon
 		defaults.setProperty("balloon.directory", "balloon");
@@ -151,7 +150,7 @@ public class NanikaArchive
 	public File getGhostHome()
 	{
 		Properties props = getProperties();
-		File shellHome = new File(props.getProperty("nanika.ghost"), props.getProperty("nanika.ghost.home"));
+		File shellHome = new File(props.getProperty("ghost.root"), props.getProperty("ghost.directory"));
 		return shellHome;
 	}
 
@@ -163,7 +162,7 @@ public class NanikaArchive
 	public File getShellHome()
 	{
 		Properties props = getProperties();
-		File shellHome = new File(props.getProperty("nanika.shell"), props.getProperty("nanika.shell.home"));
+		File shellHome = new File(props.getProperty("shell.root"), props.getProperty("shell.home"));
 		return shellHome;
 	}
 
@@ -288,7 +287,7 @@ public class NanikaArchive
 		try
 		{
 			NanikaEntry entry = getEntry(getProperty("nanika.thumbnail"));
-			if (entry == null) entry = getEntry(new File(getGhostHome(), getProperty("nanika.ghost.thumbnail")));
+			if (entry == null) entry = getEntry(new File(getGhostHome(), getProperty("ghost.thumbnail")));
 			log.debug("entry=" + entry);
 			return entry != null ? entry.readImage() : null;
 		}

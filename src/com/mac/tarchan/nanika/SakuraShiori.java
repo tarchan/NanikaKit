@@ -29,11 +29,11 @@ public class SakuraShiori
 	}
 
 	/**
-	 * このモジュールのバージョンを返します。
+	 * SHIORI のバージョンを返します。
 	 * 
 	 * @return バージョン文字列
 	 */
-	public String getModuleVersion()
+	public String getVersion()
 	{
 		return "SHIORI/3.0";
 	}
@@ -46,7 +46,7 @@ public class SakuraShiori
 	 */
 	public String request(String command)
 	{
-		return "\\0\\s[0]こんにちは。\\1\\s[10]よぉ。\\e";
+		return "\\0\\s[0]こんにちは。\\_w[1500]\\1\\s[10]よぉ。\\e";
 	}
 
 	/**

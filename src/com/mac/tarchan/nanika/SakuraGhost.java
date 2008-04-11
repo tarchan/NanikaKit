@@ -7,13 +7,18 @@
  */
 package com.mac.tarchan.nanika;
 
+import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +50,21 @@ public class SakuraGhost
 
 	/** ゴーストの栞 */
 	private SakuraShiori shiori;
+
+	/** イメージオブザーバー */
+	private Component observer;
+
+	/**
+	 * オブザーバーを設定します。
+	 * 
+	 * @param observer オブザーバー
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost setObserver(Component observer)
+	{
+		this.observer = observer;
+		return this;
+	}
 
 	/**
 	 * NAR ファイルをインストールします。
@@ -88,6 +108,8 @@ public class SakuraGhost
 		setBalloonSurface(0);
 		log.info("materialized");
 
+		requestForSecond();
+
 		return this;
 	}
 
@@ -96,10 +118,28 @@ public class SakuraGhost
 	 */
 	public void requestForSecond()
 	{
-		String script = shiori.request("OnSecondChange");
-		SakuraScript sakura = new SakuraScript();
+		log.info("requestForSecond");
+		final SakuraScript sakura = new SakuraScript();
 		sakura.put("ghost", this);
-		sakura.eval(script);
+		ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+		service.schedule(new Runnable()
+		{
+			public void run()
+			{
+				log.info("5 seconds after");
+				String script = shiori.request("OnSecondChange");
+//				script = "\\0\\s2ひゃっ\\e";
+				sakura.eval(script);
+			}
+		}, 5, TimeUnit.SECONDS);
+	}
+
+	/**
+	 * オブザーバーに再描画を依頼します。
+	 */
+	private void repaint()
+	{
+		if (observer != null) observer.repaint();
 	}
 
 	/**
@@ -107,12 +147,42 @@ public class SakuraGhost
 	 */
 	private void loadShiori()
 	{
-		log.info("loading SHIORI subsystem");
-		String shioriSubsystem = System.getProperty("com.mac.tarchan.nanika.shiori.dll", "DummyShiori");
-		log.debug("SHIORI=" + shioriSubsystem);
+		try
+		{
+			File ghostHome = currentNar.getGhostHome();
+			Properties defaults = new Properties();
+			defaults.setProperty("shiori", "shiori.dll");
+			Properties descript = currentNar.getEntry(new File(ghostHome, currentNar.getProperty("ghost.descript"))).readDescript(defaults);
+			log.debug("ghost.descript=" + descript);
 
-		shiori = new SakuraShiori();
-		shiori.request("OnBoot");
+			// 「shiori」で定義された SHIORI をロード
+			String shioriDll = descript.getProperty("shiori");
+			log.info("loading SHIORI subsystem: " + shioriDll);
+			String shioriClass = System.getProperty("com.mac.tarchan.nanika." + shioriDll);
+//			log.debug("SHIORI=" + shioriClass);
+			if (shioriClass != null)
+			{
+				try
+				{
+					Class<?> cls = Class.forName(shioriClass);
+					shiori = (SakuraShiori)cls.newInstance();
+				}
+				catch (Exception e)
+				{
+					log.error("shiori not found: " + shioriClass);
+				}
+			}
+
+			// 未初期化の場合は、デフォルトの SHIORI をロード
+			if (shiori == null) shiori = new SakuraShiori();
+
+			shiori.load(currentNar);
+			shiori.request("OnBoot");
+		}
+		catch (IOException e)
+		{
+			log.error("load shiori error", e);
+		}
 	}
 
 	/**
@@ -170,6 +240,22 @@ public class SakuraGhost
 	 * 
 	 * @return このゴーストへの参照
 	 */
+	public SakuraGhost close()
+	{
+		log.info("close");
+		nar.clear();
+		shell.clear();
+		currentNar = null;
+		currentShell = null;
+
+		return this;
+	}
+
+	/**
+	 * ゴーストを消滅させます。
+	 * 
+	 * @return このゴーストへの参照
+	 */
 	public SakuraGhost vanish()
 	{
 		log.info("vanish");
@@ -188,12 +274,8 @@ public class SakuraGhost
 	 */
 	public SakuraGhost reset()
 	{
-		setScope(1);
-		setSurface(10);
-		setBalloonSurface(-1);
-		setScope(0);
-		setSurface(0);
-		setBalloonSurface(-1);
+		setScope(1).setSurface(10).setBalloonSurface(-1);
+		setScope(0).setSurface(0).setBalloonSurface(-1);
 
 		return this;
 	}
@@ -206,6 +288,7 @@ public class SakuraGhost
 	 */
 	public SakuraGhost setScope(int scope)
 	{
+		log.debug("scope=" + scope);
 		currentShell = shell.get(scope);
 
 		return this;
@@ -219,7 +302,9 @@ public class SakuraGhost
 	 */
 	public SakuraGhost setSurface(int id)
 	{
+		log.debug("surface=" + id);
 		if (currentShell != null) currentShell.setSurface(id);
+		repaint();
 
 		return this;
 	}
@@ -237,6 +322,7 @@ public class SakuraGhost
 			SakuraBalloon balloon = currentShell.getBalloon();
 			if (balloon != null) balloon.setSurface(id);
 		}
+		repaint();
 
 		return this;
 	}
@@ -250,6 +336,11 @@ public class SakuraGhost
 	public SakuraGhost talk(String message)
 	{
 		log.debug(message);
+		if (currentShell.getBalloon() != null)
+		{
+			currentShell.getBalloon().drawString(message);
+		}
+		repaint();
 
 		return this;
 	}
@@ -281,6 +372,12 @@ public class SakuraGhost
 	 */
 	public SakuraGhost clear()
 	{
+		if (currentShell.getBalloon() != null)
+		{
+			currentShell.getBalloon().clearString();
+		}
+		repaint();
+
 		return this;
 	}
 
@@ -292,6 +389,14 @@ public class SakuraGhost
 	 */
 	public SakuraGhost waitTime(long ms)
 	{
+		try
+		{
+			Thread.sleep(ms);
+		}
+		catch (InterruptedException e)
+		{
+		}
+
 		return this;
 	}
 

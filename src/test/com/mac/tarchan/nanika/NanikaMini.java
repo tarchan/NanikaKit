@@ -64,7 +64,7 @@ public class NanikaMini extends Canvas
 			public void run()
 			{
 				log.info("えんいー");
-				mini.ghost.vanish();
+				mini.ghost.close();
 			}
 		}));
 
@@ -104,7 +104,12 @@ public class NanikaMini extends Canvas
 			// サムネールを取得
 			thumbnail = ghost.getThumbnail();
 
+			// オブザーバーを設定
+			ghost.setObserver(this);
+
 			// ゴーストを実体化
+			System.setProperty("com.mac.tarchan.nanika.shiori.dll", "test.com.mac.tarchan.nanika.NiseKawari");
+			System.setProperty("com.mac.tarchan.nanika.satori.dll", "test.com.mac.tarchan.nanika.NiseSatori");
 			ghost.materialize();
 
 //			String readme = nar.getReadme();

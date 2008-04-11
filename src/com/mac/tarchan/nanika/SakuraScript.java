@@ -42,6 +42,7 @@ public class SakuraScript
 	 */
 	public Object put(String name, Object value)
 	{
+		log.info(name + ": " + value);
 		if ("ghost".equals(name))
 		{
 			ghost = value;
@@ -52,7 +53,7 @@ public class SakuraScript
 		}
 		else
 		{
-			throw new IllegalArgumentException(name);
+//			throw new IllegalArgumentException(name);
 		}
 
 		return this;
