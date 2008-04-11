@@ -157,7 +157,8 @@ public class SakuraShell
 		try
 		{
 			// balloon
-			balloon = new SakuraBalloon(name, nar);
+//			balloon = new SakuraBalloon(name, nar);
+			balloon = nar.getBalloon(name);
 
 			// balloon offset
 			int x = Integer.parseInt(descript.getProperty(name + ".balloon.offsetx", "0"));
@@ -168,10 +169,10 @@ public class SakuraShell
 			String align = descript.getProperty(name + ".balloon.alignment");
 			balloon.setAlignment(align);
 		}
-		catch (IOException e)
-		{
-			log.error("read balloon error", e);
-		}
+//		catch (IOException e)
+//		{
+//			log.error("read balloon error", e);
+//		}
 		catch (Exception e)
 		{
 			log.error("read balloon error", e);

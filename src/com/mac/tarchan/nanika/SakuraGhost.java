@@ -77,6 +77,8 @@ public class SakuraGhost
 	{
 		NanikaArchive newNar = new NanikaArchive(name);
 		if (currentNar == null) currentNar = newNar;
+		else currentNar.setNext(newNar);
+
 		nar.put(name, newNar);
 		log.debug("nar=" + newNar);
 		Properties props = nar.get(name).getProperties();
@@ -121,6 +123,7 @@ public class SakuraGhost
 		log.info("requestForSecond");
 		final SakuraScript sakura = new SakuraScript();
 		sakura.put("ghost", this);
+		sakura.put("system", this);
 		ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
 		service.schedule(new Runnable()
 		{
@@ -135,9 +138,9 @@ public class SakuraGhost
 	}
 
 	/**
-	 * オブザーバーに再描画を依頼します。
+	 * 再描画を依頼します。
 	 */
-	private void repaint()
+	protected void repaint()
 	{
 		if (observer != null) observer.repaint();
 	}
@@ -190,7 +193,7 @@ public class SakuraGhost
 	 */
 	private void loadBalloon()
 	{
-		currentNar.getBalloon();
+//		currentNar.getBalloon();
 		String name="name";
 		String craftman = "craftman";
 		log.info(String.format("loading Balloon named as \"%s\" crafted by %s", name, craftman));

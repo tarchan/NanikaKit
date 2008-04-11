@@ -101,6 +101,7 @@ public class NanikaEntry
 			log.debug(String.format("%2d: %s", ++index, line));
 			out.println(line);
 		}
+		reader.close();
 
 		return buf.toString();
 	}
