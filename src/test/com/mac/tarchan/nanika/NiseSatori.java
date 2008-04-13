@@ -189,6 +189,9 @@ public class NiseSatori extends SakuraShiori
 	 */
 	private void putTalk(String key, String value)
 	{
+		if (value == null || value.length() == 0) return;
+
+		value = value.trim();
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
 		List<String> list = talks.get(key);
 		if (list == null)
@@ -209,6 +212,7 @@ public class NiseSatori extends SakuraShiori
 	{
 		if (value == null || value.length() == 0) return;
 
+		value = value.trim();
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
 		List<String> list = words.get(key);
 		if (list == null)
