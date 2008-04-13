@@ -210,6 +210,6 @@ public class NanikaEntry
 	 */
 	public String toString()
 	{
-		return String.format("entry=%s, file=%s", entry, zip);
+		return String.format("[entry=%s, file=%s]", entry, zip);
 	}
 }

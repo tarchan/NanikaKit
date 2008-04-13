@@ -82,12 +82,12 @@ public class SakuraShell
 		this.name = name;
 		this.nar = nar;
 
-		File shellHome = nar.getShellHome();
+		File shellDir = nar.getShellDirectory();
 
 		// descript
 		try
 		{
-			descript = nar.getEntry(new File(shellHome, nar.getProperty("shell.descript"))).readDescript();
+			descript = nar.getEntry(new File(shellDir, nar.getProperty("shell.descript"))).readDescript();
 			log.debug("descript=" + descript);
 		}
 		catch (IOException e)
@@ -126,10 +126,10 @@ public class SakuraShell
 	 */
 	private void loadSurface()
 	{
-		File shellHome = nar.getShellHome();
+		File shellDir = nar.getShellDirectory();
 
 		// image
-		NanikaEntry[] png = nar.list(new File(shellHome, "surface(.+)\\.png").getPath());
+		NanikaEntry[] png = nar.list(new File(shellDir, "surface(.+)\\.png").getPath());
 		log.debug("png=" + png.length + "," + Arrays.toString(png));
 		Pattern p = Pattern.compile("surface(.+)\\.png");
 		for (NanikaEntry entry : png)
@@ -143,7 +143,7 @@ public class SakuraShell
 		}
 
 		// collision
-		NanikaEntry[] txt = nar.list(new File(shellHome, "surface.+\\.txt").getPath());
+		NanikaEntry[] txt = nar.list(new File(shellDir, "surface.+\\.txt").getPath());
 		log.debug("txt=" + txt.length + "," + Arrays.toString(txt));		
 	}
 
@@ -209,15 +209,15 @@ public class SakuraShell
 		return descript.getProperty("craftmanw", descript.getProperty("craftman"));
 	}
 
-	/**
-	 * シェルのタイプを返します。
-	 * 
-	 * @return シェルのタイプ
-	 */
-	public String getType()
-	{
-		return descript.getProperty("type");
-	}
+//	/**
+//	 * シェルのタイプを返します。
+//	 * 
+//	 * @return シェルのタイプ
+//	 */
+//	public String getType()
+//	{
+//		return descript.getProperty("type");
+//	}
 
 	/**
 	 * サーフェスの数を返します。
@@ -303,6 +303,6 @@ public class SakuraShell
 	 */
 	public String toString()
 	{
-		return String.format("shell: name=%s, %s", name, surface.getBounds());
+		return String.format("shell: name=%s, %s", name, surface);
 	}
 }

@@ -69,13 +69,12 @@ public class NanikaArchive
 
 		Properties installDesc = install.readDescript();
 		descript.putAll(installDesc);
-//		descript.setProperty(installDesc.getProperty("type") + ".directory", installDesc.getProperty("directory"));
 		log.debug("install=" + descript);
 
-		NanikaEntry ghost = getEntry(new File(getGhostHome(), getProperty("ghost.descript")));
-		log.debug("ghost=" + ghost);
-		NanikaEntry shell = getEntry(new File(getShellHome(), getProperty("shell.descript")));
-		log.debug("shell=" + shell);
+//		NanikaEntry ghost = getEntry(new File(getGhostDirectory(), getProperty("ghost.descript")));
+//		log.debug("ghost=" + ghost);
+//		NanikaEntry shell = getEntry(new File(getShellDirectory(), getProperty("shell.descript")));
+//		log.debug("shell=" + shell);
 	}
 
 	/**
@@ -86,8 +85,28 @@ public class NanikaArchive
 	 */
 	public NanikaArchive setNext(NanikaArchive nar)
 	{
-		this.alt = nar;
+		if (alt == null) alt = nar;
+		else alt.setNext(nar);
+
 		return this;
+	}
+
+	/**
+	 * 指定したタイプのアーカイブを返します。
+	 * 
+	 * @param type アーカイブのタイプ
+	 * @return 指定したタイプのアーカイブ
+	 */
+	public NanikaArchive forType(String type)
+	{
+		NanikaArchive nar = this;
+		while (true)
+		{
+			if (nar.getType().equals(type)) return nar;
+
+			if (alt != null) nar = alt;
+			else return null;
+		}
 	}
 
 	/**
@@ -156,11 +175,21 @@ public class NanikaArchive
 //	}
 
 	/**
+	 * NAR ファイルのタイプを返します。
+	 * 
+	 * @return NAR ファイルのタイプs
+	 */
+	public String getType()
+	{
+		return getProperty("type");
+	}
+
+	/**
 	 * ゴーストのディレクトリを返します。
 	 * 
 	 * @return ゴーストのディレクトリ
 	 */
-	public File getGhostHome()
+	public File getGhostDirectory()
 	{
 		Properties props = getProperties();
 		File shellHome = new File(props.getProperty("ghost.directory"));
@@ -172,11 +201,28 @@ public class NanikaArchive
 	 * 
 	 * @return シェルのディレクトリ
 	 */
-	public File getShellHome()
+	public File getShellDirectory()
 	{
-		Properties props = getProperties();
-		File shellHome = new File(props.getProperty("shell.directory"));
-		return shellHome;
+		if (getType().equals("shell"))
+		{
+			return null;
+		}
+		else
+		{
+			Properties props = getProperties();
+			File shellHome = new File(props.getProperty("shell.directory"));
+			return shellHome;
+		}
+	}
+
+	/**
+	 * バルーンのディレクトリを返します。
+	 * 
+	 * @return バルーンのディレクトリ
+	 */
+	public File getBalloonDirectory()
+	{
+		return getType().equals("balloon") ? null : new File(getProperty("balloon.directory"));
 	}
 
 	/**
@@ -199,7 +245,7 @@ public class NanikaArchive
 	public NanikaEntry getEntry(File file)
 	{
 		String path = file.getPath();
-		if (path.startsWith("/")) path = path.substring(1);
+//		if (path.startsWith("/")) path = path.substring(1);
 		ZipEntry zipEntry = zip.getEntry(path);
 //		log.debug("zipEntry=" + zipEntry);
 		return zipEntry != null ? new NanikaEntry(zip, zipEntry) : null;
@@ -213,7 +259,7 @@ public class NanikaArchive
 	 */
 	public NanikaEntry[] list(String regex)
 	{
-		if (regex.startsWith("/")) regex = regex.substring(1);
+//		if (regex.startsWith("/")) regex = regex.substring(1);
 		log.debug("regex=" + regex);
 		java.util.Enumeration<? extends ZipEntry> in = zip.entries();
 		LinkedList<NanikaEntry> out = new LinkedList<NanikaEntry>();
@@ -250,7 +296,7 @@ public class NanikaArchive
 	 */
 	public SakuraSurface getSurface(int id)
 	{
-		File file = new File(getShellHome(), String.format("surface%s.png", id));
+		File file = new File(getShellDirectory(), String.format("surface%s.png", id));
 		log.debug(id + "=" + file);
 		NanikaEntry entry = getEntry(file);
 		log.debug(id + "=" + entry.getName());
@@ -306,7 +352,7 @@ public class NanikaArchive
 		try
 		{
 			NanikaEntry entry = getEntry(getProperty("nanika.thumbnail"));
-			if (entry == null) entry = getEntry(new File(getGhostHome(), getProperty("ghost.thumbnail")));
+			if (entry == null) entry = getEntry(new File(getGhostDirectory(), getProperty("ghost.thumbnail")));
 			log.debug("entry=" + entry);
 			return entry != null ? entry.readImage() : null;
 		}
@@ -344,9 +390,12 @@ public class NanikaArchive
 	public String toString()
 	{
 		return new StringBuilder()
+			.append("[")
 			.append("type=" + getProperty("type"))
-			.append(", name=" + getProperty("name"))
 			.append(", directory=" + getProperty("directory"))
+			.append(", name=" + getProperty("name"))
+			.append(", accept=" + getProperty("accept"))
+			.append("]")
 			.toString();
 	}
 }

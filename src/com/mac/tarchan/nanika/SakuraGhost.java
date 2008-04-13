@@ -36,14 +36,14 @@ public class SakuraGhost
 	/** ロガー */
 	private static final Log log = LogFactory.getLog(SakuraGhost.class);
 
-	/** アーカイブ */
-	private LinkedHashMap<String, NanikaArchive> nar = new LinkedHashMap<String, NanikaArchive>();
+//	/** アーカイブ */
+//	private LinkedHashMap<String, NanikaArchive> nar = new LinkedHashMap<String, NanikaArchive>();
 
 	/** シェル */
 	private LinkedHashMap<Integer, SakuraShell> shell = new LinkedHashMap<Integer, SakuraShell>();
 
 	/** NAR ファイル */
-	private NanikaArchive currentNar;
+	private NanikaArchive nar;
 
 	/** 現在のシェル */
 	private SakuraShell currentShell;
@@ -76,13 +76,14 @@ public class SakuraGhost
 	public SakuraGhost install(String name) throws IOException
 	{
 		NanikaArchive newNar = new NanikaArchive(name);
-		if (currentNar == null) currentNar = newNar;
-		else currentNar.setNext(newNar);
+		log.info("install: " + newNar);
+		if (nar == null) nar = newNar;
+		else nar.setNext(newNar);
 
-		nar.put(name, newNar);
-		log.debug("nar=" + newNar);
-		Properties props = nar.get(name).getProperties();
-		log.debug("props=" + props);
+//		nar.put(name, newNar);
+//		log.debug("nar=" + newNar);
+//		Properties props = nar.get(name).getProperties();
+//		log.debug("props=" + props);
 
 		return this;
 	}
@@ -152,10 +153,14 @@ public class SakuraGhost
 	{
 		try
 		{
-			File ghostHome = currentNar.getGhostHome();
+			NanikaArchive nar = this.nar.forType("ghost");
+			log.debug("load shiori from: " + nar);
+			if (nar == null) return;
+
+			File ghostDir = nar.getGhostDirectory();
 			Properties defaults = new Properties();
 			defaults.setProperty("shiori", "shiori.dll");
-			Properties descript = currentNar.getEntry(new File(ghostHome, currentNar.getProperty("ghost.descript"))).readDescript(defaults);
+			Properties descript = nar.getEntry(new File(ghostDir, nar.getProperty("ghost.descript"))).readDescript(defaults);
 			log.debug("ghost.descript=" + descript);
 
 			// 「shiori」で定義された SHIORI をロード
@@ -179,7 +184,7 @@ public class SakuraGhost
 			// 未初期化の場合は、デフォルトの SHIORI をロード
 			if (shiori == null) shiori = new SakuraShiori();
 
-			shiori.load(currentNar);
+			shiori.load(nar);
 			shiori.request("OnBoot");
 		}
 		catch (IOException e)
@@ -212,7 +217,7 @@ public class SakuraGhost
 	 */
 	private void loadShell()
 	{
-		SakuraShell sakura = new SakuraShell("sakura", currentNar);
+		SakuraShell sakura = new SakuraShell("sakura", nar);
 		SakuraShell kero = new SakuraShell("kero", sakura);
 
 //		File shellHome = currentNar.getShellHome();
@@ -246,9 +251,8 @@ public class SakuraGhost
 	public SakuraGhost close()
 	{
 		log.info("close");
-		nar.clear();
 		shell.clear();
-		currentNar = null;
+		nar = null;
 		currentShell = null;
 
 		return this;
@@ -262,9 +266,8 @@ public class SakuraGhost
 	public SakuraGhost vanish()
 	{
 		log.info("vanish");
-		nar.clear();
 		shell.clear();
-		currentNar = null;
+		nar = null;
 		currentShell = null;
 
 		return this;
@@ -469,7 +472,7 @@ public class SakuraGhost
 	 */
 	public BufferedImage getThumbnail()
 	{
-		return currentNar.getThumbnail();
+		return nar.getThumbnail();
 	}
 
 	/**

@@ -97,9 +97,8 @@ public class SakuraBalloon
 		this.name = name;
 //		this.nar = nar;
 
-		String type = nar.getProperty("type");
-		File balloonDir = type.equals("balloon") ? new File("") : new File(nar.getProperty("balloon.directory"));
-		log.debug("balloon=" + balloonDir);
+		File balloonDir = nar.getBalloonDirectory();
+		log.debug("balloonDir=" + balloonDir);
 		log.debug("balloon=" + new File(balloonDir, nar.getProperty("balloon.descript")));
 
 		// descript
