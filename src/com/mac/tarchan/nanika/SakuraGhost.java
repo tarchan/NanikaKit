@@ -111,7 +111,7 @@ public class SakuraGhost
 		setBalloonSurface(0);
 		log.info("materialized");
 
-		requestForSecond();
+//		requestForSecond();
 
 		return this;
 	}
@@ -199,9 +199,10 @@ public class SakuraGhost
 	private void loadBalloon()
 	{
 //		currentNar.getBalloon();
-		String name="name";
-		String craftman = "craftman";
-		log.info(String.format("loading Balloon named as \"%s\" crafted by %s", name, craftman));
+		SakuraBalloon balloon = nar.getBalloon("sakura");
+		String name = balloon.getName();
+		String craftman = balloon.getCraftman();
+		log.info(String.format("loading Balloon named as \"%s\" crafted by \"%s\"", name, craftman));
 	}
 
 	/**
@@ -344,7 +345,7 @@ public class SakuraGhost
 		log.debug(message);
 		if (currentShell.getBalloon() != null)
 		{
-			currentShell.getBalloon().drawString(message);
+			currentShell.getBalloon().append(message);
 		}
 		repaint();
 
@@ -358,6 +359,12 @@ public class SakuraGhost
 	 */
 	public SakuraGhost newLine()
 	{
+		if (currentShell.getBalloon() != null)
+		{
+			currentShell.getBalloon().append("\n");
+		}
+		repaint();
+
 		return this;
 	}
 
@@ -368,6 +375,12 @@ public class SakuraGhost
 	 */
 	public SakuraGhost halfLine()
 	{
+		if (currentShell.getBalloon() != null)
+		{
+			currentShell.getBalloon().append("\n");
+		}
+		repaint();
+
 		return this;
 	}
 
@@ -380,7 +393,7 @@ public class SakuraGhost
 	{
 		if (currentShell.getBalloon() != null)
 		{
-			currentShell.getBalloon().clearString();
+			currentShell.getBalloon().clear();
 		}
 		repaint();
 
@@ -456,7 +469,8 @@ public class SakuraGhost
 		{
 			AffineTransform tx = new AffineTransform();
 			Rectangle rect = kero.getSurface().getBounds();
-			rect.x = x + (right - x) / 2 - rect.width / 2;
+//			rect.x = x + (right - x) / 2 - rect.width / 2;
+			rect.x = right - rect.width;
 			rect.y = bottom - rect.height;
 			tx.translate(rect.x, rect.y);
 //			tx.shear(0.5, 0);

@@ -209,6 +209,26 @@ public class SakuraBalloon
 	}
 
 	/**
+	 * シェルの名前を返します。
+	 * 
+	 * @return シェルの名前
+	 */
+	public String getName()
+	{
+		return descript.getProperty("name");
+	}
+
+	/**
+	 * シェルの作成者名を返します。
+	 * 
+	 * @return シェルの作成者名
+	 */
+	public String getCraftman()
+	{
+		return descript.getProperty("craftmanw", descript.getProperty("craftman"));
+	}
+
+	/**
 	 * 表示オフセットを設定します。
 	 * 
 	 * @param x X 座標
@@ -248,7 +268,7 @@ public class SakuraBalloon
 	/**
 	 * 表示文字列をクリアします。
 	 */
-	public void clearString()
+	public void clear()
 	{
 		buf = "";
 	}
@@ -258,7 +278,7 @@ public class SakuraBalloon
 	 * 
 	 * @param str 文字列
 	 */
-	public void drawString(CharSequence str)
+	public void append(CharSequence str)
 	{
 		buf += str.toString();
 		for (int i = 0; i < str.length(); i++)

@@ -108,8 +108,27 @@ public class NanikaMini extends Canvas
 			ghost.setObserver(this);
 
 			// ゴーストを実体化
+			// 華和梨
 			System.setProperty("com.mac.tarchan.nanika.shiori.dll", "test.com.mac.tarchan.nanika.NiseKawari");
+			// 里々
 			System.setProperty("com.mac.tarchan.nanika.satori.dll", "test.com.mac.tarchan.nanika.NiseSatori");
+			System.setProperty("com.mac.tarchan.nanika.ruthtsyua.dll", "test.com.mac.tarchan.nanika.NiseSatori");
+			// 偽栞
+			System.setProperty("com.mac.tarchan.nanika.niseshiori.dll", "com.mac.tarchan.nanika.SakuraShiori");
+			// 似非SHIORI
+			System.setProperty("com.mac.tarchan.nanika.ese-shiori.dll", "com.mac.tarchan.nanika.SakuraShiori");
+			// Psyche System
+			System.setProperty("com.mac.tarchan.nanika.psyche.dll", "com.mac.tarchan.nanika.SakuraShiori");
+			// 翡翠
+			System.setProperty("com.mac.tarchan.nanika.hisui.dll", "com.mac.tarchan.nanika.SakuraShiori");
+			// 美坂
+			System.setProperty("com.mac.tarchan.nanika.misaka.dll", "com.mac.tarchan.nanika.SakuraShiori");
+			System.setProperty("com.mac.tarchan.nanika.first.dll", "com.mac.tarchan.nanika.SakuraShiori");
+			// Piro "じゃばこ"
+			System.setProperty("com.mac.tarchan.nanika.piro.dll", "com.mac.tarchan.nanika.SakuraShiori");
+			// 文
+			System.setProperty("com.mac.tarchan.nanika.aya.dll", "com.mac.tarchan.nanika.SakuraShiori");
+
 			ghost.materialize();
 
 //			String readme = nar.getReadme();
