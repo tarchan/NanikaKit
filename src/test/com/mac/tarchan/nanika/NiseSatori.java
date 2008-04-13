@@ -12,12 +12,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -44,10 +45,10 @@ public class NiseSatori extends SakuraShiori
 	}
 
 	/** トーク辞書 */
-	private Map<String, List<String>> talks = new HashMap<String, List<String>>();
+	private Map<String, List<String>> talks = new LinkedHashMap<String, List<String>>();
 
 	/** 単語辞書 */
-	private Map<String, List<String>> words = new HashMap<String, List<String>>();
+	private Map<String, List<String>> words = new LinkedHashMap<String, List<String>>();
 
 	/** 区切り文字 */
 	Pattern delimiter = Pattern.compile("(＠|＊|＃).*");
@@ -72,7 +73,8 @@ public class NiseSatori extends SakuraShiori
 		{
 			loadDic(entry);
 		}
-//		load_dic(list[0]);
+		log.debug("トーク: " + talks.size() + "," + talks.keySet());
+		log.debug("単語: " + words.size() + "," + words.keySet());
 
 		return true;
 	}
@@ -118,20 +120,6 @@ public class NiseSatori extends SakuraShiori
 					line = s.findInLine(delimiter);
 				}
 			}
-
-//			while (s.hasNextLine())
-//			{
-//				String line = s.nextLine();
-////				log.trace("line=" + line);
-//				if (line.startsWith("＊"))
-//				{
-//					scanTalk(s, line);
-//				}
-//				else if (line.startsWith("＠"))
-//				{
-//					scanWord(s, line);
-//				}
-//			}
 
 			reader.close();
 		}
@@ -185,18 +173,12 @@ public class NiseSatori extends SakuraShiori
 		while (true)
 		{
 			if (s.hasNextLine()) line = s.nextLine();
-			else
-			{
-				line = null;
-				break;
-			}
+			else return null;
 
 			// 単語を登録
-			if (delimiter.matcher(line).matches()) break;
+			if (delimiter.matcher(line).matches()) return line;
 			else putWord(key, line);
 		}
-
-		return line;
 	}
 
 	/**
@@ -258,6 +240,23 @@ public class NiseSatori extends SakuraShiori
 	}
 
 	/**
+	 * 単語を返します。
+	 * 
+	 * @param key キー
+	 * @return 単語
+	 */
+	private String getWord(String key)
+	{
+		List<String> list = words.get(key);
+		if (list == null) return null;
+
+		int len = list.size();
+		int index = rand.nextInt(len);
+		String word = list.get(index);
+		return word;
+	}
+
+	/**
 	 * さくらスクリプトを返します。
 	 * 
 	 * @param command コマンド
@@ -269,6 +268,58 @@ public class NiseSatori extends SakuraShiori
 		log.debug("command: " + command);
 //		return "\\0\\s[0]こんにちは。\\1\\s[10]よぉ。\\e";
 		String talk = getTalk("");
+		log.debug("里々=" + talk);
+		talk = eval(talk);
+		log.debug("さくら=" + talk);
 		return talk;
+	}
+
+	/**
+	 * 里々スクリプトをさくらスクリプトに変換します。
+	 * 
+	 * @param talk 里々スクリプト
+	 * @return さくらスクリプト
+	 */
+	public String eval(String talk)
+	{
+		Scanner s = new Scanner(talk);
+		StringBuilder buf = new StringBuilder();
+//		Pattern p = Pattern.compile("(?：|（(.+)）)");
+//		while (s.hasNextLine())
+		while (true)
+		{
+			String find = s.findInLine("：|(（.+?）)|[^：（]+");
+			if (find == null) break;
+			log.debug("find=" + find);
+
+			if (find.startsWith("："))
+			{
+				
+			}
+			else if (find.startsWith("（"))
+			{
+				String key = find.substring(1, find.length() - 1);
+				String word = getWord(key);
+				if (word == null) word = key;
+				buf.append("{" + word + "}");
+			}
+			else
+			{
+				buf.append(find);
+			}
+		}
+
+		return buf.toString();
+	}
+
+	/**
+	 * テスト001
+	 */
+	public void test001()
+	{
+		String in = "：普通のポストで終わりたくないなぁ……\n：……っていうかお前、自分を普通だと思ってたのか。\n：え？";
+		String out = "\\0\\s[0]\\1\\s[10]\\0普通のポストで終わりたくないなぁ…\\w2…\\w2\\n\\_w[126]\\n[half]\\1…\\w2…\\w2っていうかお前、\\_w[78]自分を普通だと思ってたのか。\\_w[84]\\n\\n[half]\\0え？\\e";
+		if (eval(in).equals(out)) System.out.println("OK");
+		else System.out.println("NG");
 	}
 }
