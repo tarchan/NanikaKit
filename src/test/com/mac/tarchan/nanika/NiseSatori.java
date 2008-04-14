@@ -38,16 +38,17 @@ public class NiseSatori extends SakuraShiori
 	/** ロガー */
 	private static final Log log = LogFactory.getLog(NiseSatori.class);
 
-	static
-	{
-		System.setProperty("com.mac.tarchan.nanika.satori.dll", "test.com.mac.tarchan.nanika.NiseSatori");
-	}
-
 	/** トーク辞書 */
-	private Map<String, List<String>> talks = new LinkedHashMap<String, List<String>>();
+	private SatoriMap talks = new SatoriMap();
 
 	/** 単語辞書 */
-	private Map<String, List<String>> words = new LinkedHashMap<String, List<String>>();
+	private SatoriMap words = new SatoriMap();
+
+	/** 前処理辞書 */
+	private LinkedHashMap<String, String> replace = new LinkedHashMap<String, String>();
+
+	/** 後処理辞書 */
+	private LinkedHashMap<String, String> replace_after = new LinkedHashMap<String, String>();
 
 	/** 区切り文字 */
 	Pattern delimiter = Pattern.compile("(＠|＊|＃).*");
@@ -69,12 +70,15 @@ public class NiseSatori extends SakuraShiori
 		if (satori_conf != null) loadDic(satori_conf);
 
 		// replace
-		NanikaEntry replace = nar.getEntry(new File(ghostDir, "replace.txt"));
-		NanikaEntry replace_after = nar.getEntry(new File(ghostDir, "replace_after.txt"));
+		replace = loadReplace(nar.getEntry(new File(ghostDir, "replace.txt")));
+		replace.put("｛", "（");
+		replace.put("｝", "）");
+		log.debug("replace=" + replace);
+		replace_after = loadReplace(nar.getEntry(new File(ghostDir, "replace_after.txt")));
+		log.debug("replace_after=" + replace_after);
 
 		// dic
-		String dic_txt = "dic.+\\.txt";
-		NanikaEntry[] list = nar.list(new File(ghostDir, dic_txt).getPath());
+		NanikaEntry[] list = nar.list(new File(ghostDir, "dic.+\\.txt").getPath());
 		log.debug("dic*.txt=" + list.length + "," + Arrays.toString(list));
 		for (NanikaEntry entry : list)
 		{
@@ -85,6 +89,58 @@ public class NiseSatori extends SakuraShiori
 		log.debug("単語: " + words.size() + "," + words.keySet());
 
 		return true;
+	}
+
+	/**
+	 * 読み替え辞書を読み込みます。
+	 * 
+	 * @param entry 辞書ファイル
+	 * @return 辞書の内容
+	 */
+	private LinkedHashMap<String, String> loadReplace(NanikaEntry entry)
+	{
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		try
+		{
+			String charset = "Shift_JIS";
+//			String charset = "MS932";
+			BufferedReader reader = new BufferedReader(new InputStreamReader(entry.getInputStream(), charset));
+			Scanner s = new Scanner(reader);
+			while (s.hasNextLine())
+			{
+				String line = s.nextLine();
+				String[] pair = line.split("\t", 2);
+//				log.debug(String.format("\"%s\"＞\"%s\"", pair[0], pair[1]));
+				pair[1] = pair[1].replaceAll("\\\\", "\\\\\\\\");
+				map.put(pair[0], pair[1]);
+			}
+			s.close();
+		}
+		catch (IOException e)
+		{
+			log.error("load replace error", e);
+		}
+
+		return map;
+	}
+
+	/**
+	 * 読み替えた文字列を返します。
+	 * 
+	 * @param map 読み替え辞書
+	 * @param value 文字列
+	 * @return 読み替えた文字列
+	 */
+	private String replace(LinkedHashMap<String, String> map, String value)
+	{
+		for (Map.Entry<String, String> entry : map.entrySet())
+		{
+			String before = entry.getKey();
+			String after = entry.getValue();
+			value = value.replaceAll(before, after);
+		}
+
+		return value;
 	}
 
 	/**
@@ -130,7 +186,7 @@ public class NiseSatori extends SakuraShiori
 				}
 			}
 
-			reader.close();
+			s.close();
 		}
 		catch (IOException e)
 		{
@@ -200,14 +256,16 @@ public class NiseSatori extends SakuraShiori
 	{
 		if (value == null || value.length() == 0) throw new IllegalArgumentException("value");
 
+		value = replace(replace, value);
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
-		List<String> list = talks.get(key);
-		if (list == null)
-		{
-			list = new LinkedList<String>();
-			talks.put(key, list);
-		}
-		list.add(value);
+		talks.put(key , value);
+//		List<String> list = talks.get(key);
+//		if (list == null)
+//		{
+//			list = new LinkedList<String>();
+//			talks.put(key, list);
+//		}
+//		list.add(value);
 	}
 
 	/**
@@ -221,17 +279,18 @@ public class NiseSatori extends SakuraShiori
 		if (value == null || value.length() == 0) throw new IllegalArgumentException("value");
 
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
-		List<String> list = words.get(key);
-		if (list == null)
-		{
-			list = new LinkedList<String>();
-			words.put(key, list);
-		}
-		list.add(value);
+		words.put(key , value);
+//		List<String> list = words.get(key);
+//		if (list == null)
+//		{
+//			list = new LinkedList<String>();
+//			words.put(key, list);
+//		}
+//		list.add(value);
 	}
 
-	/** 乱数ジェネレータ */
-	private Random rand = new Random();
+//	/** 乱数ジェネレータ */
+//	private Random rand = new Random();
 
 	/**
 	 * トークを返します。
@@ -241,13 +300,14 @@ public class NiseSatori extends SakuraShiori
 	 */
 	private String getTalk(String key)
 	{
-		List<String> list = talks.get(key);
-		if (list == null) return null;
-
-		int len = list.size();
-		int index = rand.nextInt(len);
-		String talk = list.get(index);
-		return talk;
+		return talks.get(key);
+//		List<String> list = talks.get(key);
+//		if (list == null) return null;
+//
+//		int len = list.size();
+//		int index = rand.nextInt(len);
+//		String talk = list.get(index);
+//		return talk;
 	}
 
 	/**
@@ -258,13 +318,14 @@ public class NiseSatori extends SakuraShiori
 	 */
 	private String getWord(String key)
 	{
-		List<String> list = words.get(key);
-		if (list == null) return null;
-
-		int len = list.size();
-		int index = rand.nextInt(len);
-		String word = list.get(index);
-		return word;
+		return words.get(key);
+//		List<String> list = words.get(key);
+//		if (list == null) return null;
+//
+//		int len = list.size();
+//		int index = rand.nextInt(len);
+//		String word = list.get(index);
+//		return word;
 	}
 
 	/**
@@ -295,24 +356,40 @@ public class NiseSatori extends SakuraShiori
 	{
 		Scanner s = new Scanner(talk);
 		StringBuilder buf = new StringBuilder();
+		int scope = 1;
 //		Pattern p = Pattern.compile("(?：|（(.+)）)");
 //		while (s.hasNextLine())
 		while (true)
 		{
-			String find = s.findInLine("：|(（.+?）)|[^：（]+");
+			String find = s.findInLine("：|（.+?）|[^：（]+");
 			if (find == null) break;
 			log.debug("find=" + find);
 
 			if (find.startsWith("："))
 			{
-				
+				scope = scope != 0 ? 0 : 1;
+				buf.append("\\");
+				buf.append(scope);
 			}
 			else if (find.startsWith("（"))
 			{
 				String key = find.substring(1, find.length() - 1);
-				String word = getWord(key);
-				if (word == null) word = key;
-				buf.append("{" + word + "}");
+				try
+				{
+					int num = Integer.parseInt(key);
+					buf.append("\\s");
+					buf.append(num);
+				}
+				catch (NumberFormatException e)
+				{
+					String word = getWord(key);
+					if (word == null) word = "{" + key + "}";
+					buf.append(word);
+				}
+			}
+			else if (find.startsWith("\n"))
+			{
+				buf.append("\\n");
 			}
 			else
 			{
@@ -320,7 +397,7 @@ public class NiseSatori extends SakuraShiori
 			}
 		}
 
-		return buf.toString();
+		return replace(replace_after, buf.toString());
 	}
 
 	/**
@@ -332,5 +409,57 @@ public class NiseSatori extends SakuraShiori
 		String out = "\\0\\s[0]\\1\\s[10]\\0普通のポストで終わりたくないなぁ…\\w2…\\w2\\n\\_w[126]\\n[half]\\1…\\w2…\\w2っていうかお前、\\_w[78]自分を普通だと思ってたのか。\\_w[84]\\n\\n[half]\\0え？\\e";
 		if (eval(in).equals(out)) System.out.println("OK");
 		else System.out.println("NG");
+	}
+}
+
+/**
+ * 里々辞書を実装します。
+ * 
+ * @since 1.0
+ * @author tarchan
+ */
+class SatoriMap extends LinkedHashMap<String, List<String>>
+{
+	/** 乱数ジェネレータ */
+	private Random rand = new Random();
+
+	/**
+	 * トークを辞書に追加します。
+	 * 
+	 * @param key キー
+	 * @param value トーク
+	 * @return このマップへの参照
+	 */
+	public Object put(String key, String value)
+	{
+		if (key == null) throw new IllegalArgumentException("key");
+		if (value == null || value.length() == 0) throw new IllegalArgumentException("value");
+
+		List<String> list = super.get(key);
+		if (list == null)
+		{
+			list = new LinkedList<String>();
+			super.put(key, list);
+		}
+		list.add(value);
+
+		return this;
+	}
+
+	/**
+	 * トークを返します。
+	 * 
+	 * @param key キー
+	 * @return トーク
+	 */
+	public String get(String key)
+	{
+		List<String> list = super.get(key);
+		if (list == null) return null;
+
+		int len = list.size();
+		int index = rand.nextInt(len);
+		String talk = list.get(index);
+		return talk;
 	}
 }
