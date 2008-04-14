@@ -89,6 +89,16 @@ public class SakuraGhost
 	}
 
 	/**
+	 * ゴーストの名前を返します。
+	 * 
+	 * @return ゴーストの名前
+	 */
+	public String getName()
+	{
+		return nar.forType("ghost").getProperty("name");
+	}
+
+	/**
 	 * ゴーストの姿を現します。
 	 * 
 	 * @return このゴーストへの参照
@@ -111,7 +121,7 @@ public class SakuraGhost
 		setBalloonSurface(0);
 		log.info("materialized");
 
-//		requestForSecond();
+		requestForSecond();
 
 		return this;
 	}
@@ -125,15 +135,19 @@ public class SakuraGhost
 		final SakuraScript sakura = new SakuraScript();
 		sakura.put("ghost", this);
 		sakura.put("system", this);
+
+		String script = shiori.request("OnBoot");
+		sakura.eval(script);
+
 		ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
 		service.schedule(new Runnable()
 		{
 			public void run()
 			{
-				log.info("5 seconds after");
-				String script = shiori.request("OnSecondChange");
-//				script = "\\0\\s2ひゃっ\\e";
-				sakura.eval(script);
+//				log.info("5 seconds after");
+//				String script = shiori.request("OnSecondChange");
+////				script = "\\0\\s2ひゃっ\\e";
+//				sakura.eval(script);
 			}
 		}, 5, TimeUnit.SECONDS);
 	}
@@ -160,7 +174,7 @@ public class SakuraGhost
 			File ghostDir = nar.getGhostDirectory();
 			Properties defaults = new Properties();
 			defaults.setProperty("shiori", "shiori.dll");
-			Properties descript = nar.getEntry(new File(ghostDir, nar.getProperty("ghost.descript"))).readDescript(defaults);
+			Properties descript = nar.getEntry(new File(ghostDir, nar.getProperty("ghost.descript"))).asDescript(defaults);
 			log.debug("ghost.descript=" + descript);
 
 			// 「shiori」で定義された SHIORI をロード
@@ -185,7 +199,6 @@ public class SakuraGhost
 			if (shiori == null) shiori = new SakuraShiori();
 
 			shiori.load(nar);
-			shiori.request("OnBoot");
 		}
 		catch (IOException e)
 		{

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -63,16 +62,25 @@ public class NiseSatori extends SakuraShiori
 	public boolean load(NanikaArchive nar)
 	{
 		log.debug("satori nar: " + nar);
+		File ghostDir = nar.getGhostDirectory();
+
+		// satori_conf
+		NanikaEntry satori_conf = nar.getEntry(new File(ghostDir, "satori_conf.txt"));
+		if (satori_conf != null) loadDic(satori_conf);
+
+		// replace
+		NanikaEntry replace = nar.getEntry(new File(ghostDir, "replace.txt"));
+		NanikaEntry replace_after = nar.getEntry(new File(ghostDir, "replace_after.txt"));
 
 		// dic
-		File ghostDir = nar.getGhostDirectory();
-		String dic_txt = "dic.+.txt";
+		String dic_txt = "dic.+\\.txt";
 		NanikaEntry[] list = nar.list(new File(ghostDir, dic_txt).getPath());
 		log.debug("dic*.txt=" + list.length + "," + Arrays.toString(list));
 		for (NanikaEntry entry : list)
 		{
 			loadDic(entry);
 		}
+
 		log.debug("トーク: " + talks.size() + "," + talks.keySet());
 		log.debug("単語: " + words.size() + "," + words.keySet());
 
@@ -89,7 +97,8 @@ public class NiseSatori extends SakuraShiori
 		log.trace("dic=" + entry.getName());
 		try
 		{
-			String charset = "MS932";
+			String charset = "Shift_JIS";
+//			String charset = "MS932";
 			BufferedReader reader = new BufferedReader(new InputStreamReader(entry.getInputStream(), charset));
 			Scanner s = new Scanner(reader);
 
@@ -155,7 +164,7 @@ public class NiseSatori extends SakuraShiori
 		}
 
 		// トークを登録
-		putTalk(key, value.toString());
+		putTalk(key, value.toString().trim());
 
 		return line;
 	}
@@ -177,7 +186,7 @@ public class NiseSatori extends SakuraShiori
 
 			// 単語を登録
 			if (delimiter.matcher(line).matches()) return line;
-			else putWord(key, line);
+			else if (line.length() != 0) putWord(key, line.trim());
 		}
 	}
 
@@ -189,9 +198,8 @@ public class NiseSatori extends SakuraShiori
 	 */
 	private void putTalk(String key, String value)
 	{
-		if (value == null || value.length() == 0) return;
+		if (value == null || value.length() == 0) throw new IllegalArgumentException("value");
 
-		value = value.trim();
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
 		List<String> list = talks.get(key);
 		if (list == null)
@@ -210,9 +218,8 @@ public class NiseSatori extends SakuraShiori
 	 */
 	private void putWord(String key, String value)
 	{
-		if (value == null || value.length() == 0) return;
+		if (value == null || value.length() == 0) throw new IllegalArgumentException("value");
 
-		value = value.trim();
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
 		List<String> list = words.get(key);
 		if (list == null)

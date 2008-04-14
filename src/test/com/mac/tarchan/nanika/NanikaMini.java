@@ -129,6 +129,7 @@ public class NanikaMini extends Canvas
 			// 文
 			System.setProperty("com.mac.tarchan.nanika.aya.dll", "com.mac.tarchan.nanika.SakuraShiori");
 
+			log.info(String.format("\"%s\"を実体化します。", ghost.getName()));
 			ghost.materialize();
 
 //			String readme = nar.getReadme();
@@ -138,6 +139,16 @@ public class NanikaMini extends Canvas
 		{
 			log.error("set nanika error", e);
 		}
+	}
+
+	/**
+	 * ゴーストの名前を返します。
+	 * 
+	 * @return ゴーストの名前
+	 */
+	public String getName()
+	{
+		return ghost.getName();
 	}
 
 	/**
@@ -157,7 +168,7 @@ public class NanikaMini extends Canvas
 	 */
 	private void paint2d(Graphics2D g)
 	{
-		log.debug("Graphics2D=" + g.getClass().getName());
+//		log.debug("Graphics2D=" + g.getClass().getName());
 		// sun.java2d.SunGraphics2D
 //		g.fill(sakura);
 //		g.fill(kero);

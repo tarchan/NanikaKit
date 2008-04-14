@@ -67,7 +67,7 @@ public class NanikaArchive
 		NanikaEntry install = getEntry(getProperty("nanika.install"));
 		if (install == null) throw new FileNotFoundException(getProperty("nanika.install"));
 
-		Properties installDesc = install.readDescript();
+		Properties installDesc = install.asDescript();
 		descript.putAll(installDesc);
 		log.debug("install=" + descript);
 
@@ -354,7 +354,7 @@ public class NanikaArchive
 			NanikaEntry entry = getEntry(getProperty("nanika.thumbnail"));
 			if (entry == null) entry = getEntry(new File(getGhostDirectory(), getProperty("ghost.thumbnail")));
 			log.debug("entry=" + entry);
-			return entry != null ? entry.readImage() : null;
+			return entry != null ? entry.asImage() : null;
 		}
 		catch (IOException e)
 		{
@@ -373,7 +373,7 @@ public class NanikaArchive
 		try
 		{
 			NanikaEntry entry = getEntry(getProperty("nanika.readme"));
-			return entry != null ? entry.readText() : null;
+			return entry != null ? entry.asText() : null;
 		}
 		catch (IOException e)
 		{

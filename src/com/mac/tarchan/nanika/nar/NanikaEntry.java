@@ -85,7 +85,7 @@ public class NanikaEntry
 	 * @return プレーンテキスト
 	 * @throws IOException 入力エラーが発生した場合
 	 */
-	public String readText() throws IOException
+	public String asText() throws IOException
 	{
 		InputStream in = getInputStream();
 		String encoding = "Shift_JIS";
@@ -146,7 +146,7 @@ public class NanikaEntry
 	 * @return プロパティーオブジェクト
 	 * @throws IOException 入力エラーが発生した場合
 	 */
-	public Properties readDescript() throws IOException
+	public Properties asDescript() throws IOException
 	{
 		Properties descript = new Properties();
 		loadDescript(descript, null);
@@ -184,7 +184,7 @@ public class NanikaEntry
 	 * @return プロパティーオブジェクト
 	 * @throws IOException 入力エラーが発生した場合
 	 */
-	public Properties readDescript(Properties defaults) throws IOException
+	public Properties asDescript(Properties defaults) throws IOException
 	{
 		Properties descript = new Properties(defaults);
 		loadDescript(descript, null);
@@ -197,7 +197,7 @@ public class NanikaEntry
 	 * @return イメージ
 	 * @throws IOException 入力エラーが発生した場合
 	 */
-	public BufferedImage readImage() throws IOException
+	public BufferedImage asImage() throws IOException
 	{
 		BufferedImage image = ImageIO.read(getInputStream());
 		return image;

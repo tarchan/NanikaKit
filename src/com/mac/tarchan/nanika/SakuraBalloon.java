@@ -102,7 +102,7 @@ public class SakuraBalloon
 		log.debug("balloon=" + new File(balloonDir, nar.getProperty("balloon.descript")));
 
 		// descript
-		descript = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.descript"))).readDescript();
+		descript = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.descript"))).asDescript();
 		log.debug("descript=" + descript);
 
 		{
@@ -132,7 +132,7 @@ public class SakuraBalloon
 		{
 			String face = descript.getProperty("font.height");
 			int height = Integer.parseInt(descript.getProperty("font.height", "0"));
-			height = 24;
+//			height = 24;
 			int r = Integer.parseInt(descript.getProperty("font.color.r", "0"));
 			int g = Integer.parseInt(descript.getProperty("font.color.g", "0"));
 			int b = Integer.parseInt(descript.getProperty("font.color.b", "0"));
@@ -144,7 +144,7 @@ public class SakuraBalloon
 		{
 			int x = Integer.parseInt(descript.getProperty("arrow0.x", "0"));
 			int y = Integer.parseInt(descript.getProperty("arrow0.y", "0"));
-			BufferedImage image = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.arrow0"))).readImage();
+			BufferedImage image = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.arrow0"))).asImage();
 			arrow0 = new SakuraSurface("arrow0", image);
 			arrow0.setLocation(x, y);
 			log.debug("arrow0=" + arrow0);
@@ -153,7 +153,7 @@ public class SakuraBalloon
 		{
 			int x = Integer.parseInt(descript.getProperty("arrow1.x", "0"));
 			int y = Integer.parseInt(descript.getProperty("arrow1.y", "0"));
-			BufferedImage image = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.arrow1"))).readImage();
+			BufferedImage image = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.arrow1"))).asImage();
 			arrow1 = new SakuraSurface("arrow1", image);
 			arrow1.setLocation(x, y);
 			log.debug("arrow1=" + arrow1);
@@ -162,7 +162,7 @@ public class SakuraBalloon
 		{
 			int x = Integer.parseInt(descript.getProperty("onlinemarker.x", "0"));
 			int y = Integer.parseInt(descript.getProperty("onlinemarker.y", "0"));
-			BufferedImage image = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.onlinemarker"))).readImage();
+			BufferedImage image = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.onlinemarker"))).asImage();
 			onlinemarker = new SakuraSurface("onlinemarker", image);
 			onlinemarker.setLocation(x, y);
 			log.debug("onlinemarker=" + onlinemarker);
@@ -171,7 +171,7 @@ public class SakuraBalloon
 		{
 			int x = Integer.parseInt(descript.getProperty("sstpmarker.x", "0"));
 			int y = Integer.parseInt(descript.getProperty("sstpmarker.y", "0"));
-			BufferedImage image = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.sstpmarker"))).readImage();
+			BufferedImage image = nar.getEntry(new File(balloonDir, nar.getProperty("balloon.sstpmarker"))).asImage();
 			sstpmarker = new SakuraSurface("sstpmarker", image);
 			sstpmarker.setLocation(x, y);
 			log.debug("sstpmarker=" + sstpmarker);
@@ -203,7 +203,7 @@ public class SakuraBalloon
 			int id = Integer.parseInt(m.group(1));
 //			surfaces.put(id, nar.getSurface(id));
 			log.debug("entry=" + n + "," + id);
-			BufferedImage image = entry.readImage();
+			BufferedImage image = entry.asImage();
 			surfaces.put(id, new SakuraSurface(new File(n).getName(), image));
 		}
 	}
