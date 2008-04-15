@@ -55,8 +55,9 @@ public class NanikaMini extends Canvas
 		}
 
 		final NanikaMini mini = new NanikaMini();
-		mini.setSize(640, 480);
+//		mini.setSize(640, 480);
 //		mini.setSize(800, 600);
+		mini.setSize(800, 450);
 		mini.setNanika(args);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()

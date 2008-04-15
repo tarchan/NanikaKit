@@ -10,6 +10,10 @@ package com.mac.tarchan.nanika;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -63,6 +67,7 @@ public class SakuraGhost
 	public SakuraGhost setObserver(Component observer)
 	{
 		this.observer = observer;
+
 		return this;
 	}
 
@@ -135,6 +140,33 @@ public class SakuraGhost
 		final SakuraScript sakura = new SakuraScript();
 		sakura.put("ghost", this);
 		sakura.put("system", this);
+
+		ClickAdapter clicker = new ClickAdapter()
+		{
+			/**
+			 * @see com.mac.tarchan.nanika.ClickAdapter#mouseClicked(java.awt.event.MouseEvent)
+			 */
+			@Override
+			public void mouseClicked(MouseEvent mouseevent)
+			{
+				reset();
+				String script = shiori.request("OnMouseClick");
+				sakura.eval(script);
+			}
+
+			/**
+			 * @see com.mac.tarchan.nanika.ClickAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+			 */
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent mousewheelevent)
+			{
+				reset();
+				String script = shiori.request("OnMouseWheel");
+				sakura.eval(script);
+			}			
+		};
+		observer.addMouseListener(clicker);
+		observer.addMouseWheelListener(clicker);
 
 		String script = shiori.request("OnBoot");
 		sakura.eval(script);
@@ -294,8 +326,10 @@ public class SakuraGhost
 	 */
 	public SakuraGhost reset()
 	{
-		setScope(1).setSurface(10).setBalloonSurface(-1);
-		setScope(0).setSurface(0).setBalloonSurface(-1);
+//		setScope(1).setSurface(10).setBalloonSurface(-1);
+//		setScope(0).setSurface(0).setBalloonSurface(-1);
+		setScope(1).setSurface(10).clear();
+		setScope(0).setSurface(0).clear();
 
 		return this;
 	}
@@ -511,4 +545,20 @@ public class SakuraGhost
 	{
 		return String.format("nar=%s, current=%s", nar, currentShell);
 	}
+}
+
+/**
+ * マウスリスナーをまとめて実装します。
+ * 
+ * @since 1.0
+ * @author tarchan
+ */
+class ClickAdapter extends MouseAdapter implements MouseWheelListener
+{
+	/**
+	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+	 */
+	public void mouseWheelMoved(MouseWheelEvent mousewheelevent)
+	{
+	}	
 }

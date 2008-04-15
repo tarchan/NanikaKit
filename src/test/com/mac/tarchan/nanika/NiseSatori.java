@@ -356,12 +356,13 @@ public class NiseSatori extends SakuraShiori
 	{
 		Scanner s = new Scanner(talk);
 		StringBuilder buf = new StringBuilder();
+		buf.append("\\0\\s[0]\\1\\s[10]");
 		int scope = 1;
 //		Pattern p = Pattern.compile("(?：|（(.+)）)");
 //		while (s.hasNextLine())
 		while (true)
 		{
-			String find = s.findInLine("：|（.+?）|[^：（]+");
+			String find = s.findInLine("：|（.+?）|\n|[^：（]+");
 			if (find == null) break;
 			log.debug("find=" + find);
 
@@ -377,8 +378,9 @@ public class NiseSatori extends SakuraShiori
 				try
 				{
 					int num = Integer.parseInt(key);
-					buf.append("\\s");
+					buf.append("\\s[");
 					buf.append(num);
+					buf.append("]");
 				}
 				catch (NumberFormatException e)
 				{
