@@ -8,6 +8,7 @@
 package com.mac.tarchan.nanika;
 
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -453,26 +454,23 @@ public class SakuraGhost
 	 * @param ms ウエイト時間
 	 * @return このゴーストへの参照
 	 */
-	public SakuraGhost waitTime(long ms)
+	public SakuraGhost waitTime(final long ms)
 	{
-		try
+		EventQueue.invokeLater(new Runnable()
 		{
-			Thread.sleep(ms);
-		}
-		catch (InterruptedException e)
-		{
-		}
+			public void run()
+			{
+				try
+				{
+					Thread.sleep(ms);
+				}
+				catch (InterruptedException e)
+				{
+					log.error("sleep error: " + ms, e);
+				}
+			}
+		});
 
-		return this;
-	}
-
-	/**
-	 * えんいー
-	 * 
-	 * @return このゴーストへの参照
-	 */
-	public SakuraGhost yen_e()
-	{
 		return this;
 	}
 
@@ -524,6 +522,7 @@ public class SakuraGhost
 			g.setTransform(tx);
 			kero.draw(g);
 		}
+		observer.getToolkit().sync();
 	}
 
 	/**

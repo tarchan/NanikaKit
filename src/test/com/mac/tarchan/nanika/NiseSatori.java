@@ -51,7 +51,7 @@ public class NiseSatori extends SakuraShiori
 	private LinkedHashMap<String, String> replace_after = new LinkedHashMap<String, String>();
 
 	/** 区切り文字 */
-	Pattern delimiter = Pattern.compile("(＠|＊|＃).*");
+	Pattern delimiter = Pattern.compile("[＠＊＃](.*)");
 
 	/**
 	 * SHIORI をロードします。
@@ -62,6 +62,7 @@ public class NiseSatori extends SakuraShiori
 	@Override
 	public boolean load(NanikaArchive nar)
 	{
+		// TODO load(File ghost) をシミュレートすべきか？
 		log.debug("satori nar: " + nar);
 		File ghostDir = nar.getGhostDirectory();
 
@@ -170,7 +171,7 @@ public class NiseSatori extends SakuraShiori
 				{
 					// トーク
 					log.trace("トーク=" + line);
-					line = scanTalk(s, line);
+					line = scanTalk(s, s.match().group(1));
 				}
 				else if (line.startsWith("＠"))
 				{
@@ -203,7 +204,7 @@ public class NiseSatori extends SakuraShiori
 	 */
 	private String scanTalk(Scanner s, String line)
 	{
-		String key = line.substring(1);
+		String key = line;
 		StringBuilder value = new StringBuilder();
 		while (true)
 		{
@@ -259,13 +260,6 @@ public class NiseSatori extends SakuraShiori
 		value = replace(replace, value);
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
 		talks.put(key , value);
-//		List<String> list = talks.get(key);
-//		if (list == null)
-//		{
-//			list = new LinkedList<String>();
-//			talks.put(key, list);
-//		}
-//		list.add(value);
 	}
 
 	/**
@@ -280,13 +274,6 @@ public class NiseSatori extends SakuraShiori
 
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
 		words.put(key , value);
-//		List<String> list = words.get(key);
-//		if (list == null)
-//		{
-//			list = new LinkedList<String>();
-//			words.put(key, list);
-//		}
-//		list.add(value);
 	}
 
 //	/** 乱数ジェネレータ */
@@ -301,13 +288,6 @@ public class NiseSatori extends SakuraShiori
 	private String getTalk(String key)
 	{
 		return talks.get(key);
-//		List<String> list = talks.get(key);
-//		if (list == null) return null;
-//
-//		int len = list.size();
-//		int index = rand.nextInt(len);
-//		String talk = list.get(index);
-//		return talk;
 	}
 
 	/**
@@ -319,13 +299,6 @@ public class NiseSatori extends SakuraShiori
 	private String getWord(String key)
 	{
 		return words.get(key);
-//		List<String> list = words.get(key);
-//		if (list == null) return null;
-//
-//		int len = list.size();
-//		int index = rand.nextInt(len);
-//		String word = list.get(index);
-//		return word;
 	}
 
 	/**
@@ -339,10 +312,13 @@ public class NiseSatori extends SakuraShiori
 	{
 		log.debug("command: " + command);
 //		return "\\0\\s[0]こんにちは。\\1\\s[10]よぉ。\\e";
+
 		String talk = getTalk("");
 		log.debug("里々=" + talk);
+
 		talk = eval(talk);
 		log.debug("さくら=" + talk);
+
 		return talk;
 	}
 
@@ -358,23 +334,25 @@ public class NiseSatori extends SakuraShiori
 		StringBuilder buf = new StringBuilder();
 		buf.append("\\0\\s[0]\\1\\s[10]");
 		int scope = 1;
-//		Pattern p = Pattern.compile("(?：|（(.+)）)");
-//		while (s.hasNextLine())
+		int wait = 100;
 		while (true)
 		{
-			String find = s.findInLine("：|（.+?）|\n|[^：（]+");
+			String find = s.findInLine("：|（(.+?)）|、|。|\n|[^：（、。]+");
 			if (find == null) break;
 			log.debug("find=" + find);
 
 			if (find.startsWith("："))
 			{
+				// スコープ切り替え
 				scope = scope != 0 ? 0 : 1;
 				buf.append("\\");
 				buf.append(scope);
 			}
 			else if (find.startsWith("（"))
 			{
-				String key = find.substring(1, find.length() - 1);
+				// サーフェス切り替え
+//				String key = find.substring(1, find.length() - 1);
+				String key = s.match().group(1);
 				try
 				{
 					int num = Integer.parseInt(key);
@@ -384,21 +362,41 @@ public class NiseSatori extends SakuraShiori
 				}
 				catch (NumberFormatException e)
 				{
+					// 単語置き換え
 					String word = getWord(key);
 					if (word == null) word = "{" + key + "}";
 					buf.append(word);
 				}
 			}
+			else if (find.startsWith("、"))
+			{
+				// 読点
+				buf.append("、");
+				buf.append("\\_w[");
+				buf.append(wait);
+				buf.append("]");
+			}
+			else if (find.startsWith("。"))
+			{
+				// 句点
+				buf.append("。");
+				buf.append("\\_w[");
+				buf.append(wait);
+				buf.append("]");
+			}
 			else if (find.startsWith("\n"))
 			{
+				// 改行
 				buf.append("\\n");
 			}
 			else
 			{
+				// テキスト
 				buf.append(find);
 			}
 		}
 
+		// さくらスクリプトを返す
 		return replace(replace_after, buf.toString());
 	}
 
