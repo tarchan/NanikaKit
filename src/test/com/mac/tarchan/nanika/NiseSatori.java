@@ -337,7 +337,7 @@ public class NiseSatori extends SakuraShiori
 		int wait = 100;
 		while (true)
 		{
-			String find = s.findInLine("：|（(.+?)）|、|。|\n|[^：（、。]+");
+			String find = s.findInLine("：|（(.(.*?))）|、|。|\n|[^：（、。]+");
 			if (find == null) break;
 			log.debug("find=" + find);
 
@@ -350,11 +350,10 @@ public class NiseSatori extends SakuraShiori
 			}
 			else if (find.startsWith("（"))
 			{
-				// サーフェス切り替え
-//				String key = find.substring(1, find.length() - 1);
 				String key = s.match().group(1);
 				try
 				{
+					// サーフェス切り替え
 					int num = Integer.parseInt(key);
 					buf.append("\\s[");
 					buf.append(num);

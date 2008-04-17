@@ -141,22 +141,25 @@ public class SakuraGhost
 		final SakuraScript sakura = new SakuraScript();
 		sakura.put("ghost", this);
 		sakura.put("system", this);
+		final ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
 
-		ClickAdapter clicker = new ClickAdapter()
+		MouseTracker clicker = new MouseTracker()
 		{
 			/**
-			 * @see com.mac.tarchan.nanika.ClickAdapter#mouseClicked(java.awt.event.MouseEvent)
+			 * @see com.mac.tarchan.nanika.MouseTracker#mouseClicked(java.awt.event.MouseEvent)
 			 */
 			@Override
 			public void mouseClicked(MouseEvent mouseevent)
 			{
-				reset();
+//				reset();
 				String script = shiori.request("OnMouseClick");
-				sakura.eval(script);
+//				sakura.eval(script);
+				GhostRunner runner = new GhostRunner(sakura, script);
+				service.execute(runner);
 			}
 
 			/**
-			 * @see com.mac.tarchan.nanika.ClickAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+			 * @see com.mac.tarchan.nanika.MouseTracker#mouseWheelMoved(java.awt.event.MouseWheelEvent)
 			 */
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent mousewheelevent)
@@ -170,9 +173,10 @@ public class SakuraGhost
 		observer.addMouseWheelListener(clicker);
 
 		String script = shiori.request("OnBoot");
-		sakura.eval(script);
+//		sakura.eval(script);
+		GhostRunner runner = new GhostRunner(sakura, script);
+		service.execute(runner);
 
-		ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
 		service.schedule(new Runnable()
 		{
 			public void run()
@@ -183,6 +187,42 @@ public class SakuraGhost
 //				sakura.eval(script);
 			}
 		}, 5, TimeUnit.SECONDS);
+	}
+
+	/**
+	 * さくらスクリプトを実行します。
+	 * 
+	 * @since 1.0
+	 * @author tarchan
+	 */
+	class GhostRunner implements Runnable
+	{
+		/** スクリプトエンジン */
+		private SakuraScript sakura;
+
+		/** さくらスクリプト */
+		private String script;
+
+		/**
+		 * さくらスクリプト実行オブジェクトを構築します。
+		 * 
+		 * @param sakura スクリプトエンジン
+		 * @param script さくらスクリプト
+		 */
+		public GhostRunner(SakuraScript sakura, String script)
+		{
+			this.sakura = sakura;
+			this.script = script;
+		}
+
+		/**
+		 * @see java.lang.Runnable#run()
+		 */
+		public void run()
+		{
+			reset();
+			sakura.eval(script);
+		}		
 	}
 
 	/**
@@ -383,6 +423,48 @@ public class SakuraGhost
 	}
 
 	/**
+	 * ウエイト
+	 * 
+	 * @param ms ウエイト時間
+	 * @return このゴーストへの参照
+	 */
+	public SakuraGhost waitTime(final long ms)
+	{
+		EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				try
+				{
+					Thread.sleep(ms);
+				}
+				catch (InterruptedException e)
+				{
+					log.error("sleep error: " + ms, e);
+				}
+			}
+		});
+	
+		return this;
+	}
+
+	/** トークバッファ */
+	private StringBuilder talk = new StringBuilder();
+
+	/**
+	 * トーク中かどうか判定します。
+	 * 
+	 * @return トーク中の場合は true
+	 */
+	public boolean isTalking()
+	{
+		synchronized(talk)
+		{
+			return talk.length() > 0;
+		}
+	}
+
+	/**
 	 * 現在のスコープのバルーンにメッセージを表示します。
 	 * 
 	 * @param message メッセージ
@@ -391,11 +473,25 @@ public class SakuraGhost
 	public SakuraGhost talk(String message)
 	{
 		log.debug(message);
-		if (currentShell.getBalloon() != null)
+//		if (currentShell.getBalloon() != null)
+//		{
+//			currentShell.getBalloon().append(message);
+//		}
+		synchronized(talk)
 		{
-			currentShell.getBalloon().append(message);
+			talk.append(message);
 		}
 		repaint();
+		while (isTalking())
+		{
+			try
+			{
+				Thread.sleep(10);
+			}
+			catch (InterruptedException e)
+			{
+			}
+		}
 
 		return this;
 	}
@@ -449,32 +545,6 @@ public class SakuraGhost
 	}
 
 	/**
-	 * ウエイト
-	 * 
-	 * @param ms ウエイト時間
-	 * @return このゴーストへの参照
-	 */
-	public SakuraGhost waitTime(final long ms)
-	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				try
-				{
-					Thread.sleep(ms);
-				}
-				catch (InterruptedException e)
-				{
-					log.error("sleep error: " + ms, e);
-				}
-			}
-		});
-
-		return this;
-	}
-
-	/**
 	 * ゴーストを描画します。
 	 * 
 	 * @param g Graphics2D コンテキスト
@@ -522,7 +592,23 @@ public class SakuraGhost
 			g.setTransform(tx);
 			kero.draw(g);
 		}
-		observer.getToolkit().sync();
+
+//		observer.getToolkit().sync();
+
+		if (isTalking())
+		{
+			synchronized(talk)
+			{
+				String ch = talk.substring(0, 1);
+				talk = new StringBuilder(talk.substring(1));
+				if (currentShell.getBalloon() != null)
+				{
+					currentShell.getBalloon().append(ch);
+				}
+			}
+
+			repaint();
+		}
 	}
 
 	/**
@@ -547,17 +633,17 @@ public class SakuraGhost
 }
 
 /**
- * マウスリスナーをまとめて実装します。
+ * マウスリスナーの空の実装をします。
  * 
  * @since 1.0
  * @author tarchan
  */
-class ClickAdapter extends MouseAdapter implements MouseWheelListener
+class MouseTracker extends MouseAdapter implements MouseWheelListener
 {
 	/**
 	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
 	 */
 	public void mouseWheelMoved(MouseWheelEvent mousewheelevent)
 	{
-	}	
+	}
 }
