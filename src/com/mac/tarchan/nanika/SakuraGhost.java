@@ -11,10 +11,8 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.mac.tarchan.event.MouseTracker;
 import com.mac.tarchan.nanika.nar.NanikaArchive;
 
 /**
@@ -146,7 +145,7 @@ public class SakuraGhost
 		MouseTracker clicker = new MouseTracker()
 		{
 			/**
-			 * @see com.mac.tarchan.nanika.MouseTracker#mouseClicked(java.awt.event.MouseEvent)
+			 * @see com.mac.tarchan.event.MouseTracker#mouseClicked(java.awt.event.MouseEvent)
 			 */
 			@Override
 			public void mouseClicked(MouseEvent mouseevent)
@@ -159,14 +158,16 @@ public class SakuraGhost
 			}
 
 			/**
-			 * @see com.mac.tarchan.nanika.MouseTracker#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+			 * @see com.mac.tarchan.event.MouseTracker#mouseWheelMoved(java.awt.event.MouseWheelEvent)
 			 */
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent mousewheelevent)
 			{
-				reset();
+//				reset();
 				String script = shiori.request("OnMouseWheel");
-				sakura.eval(script);
+//				sakura.eval(script);
+				GhostRunner runner = new GhostRunner(sakura, script);
+				service.execute(runner);
 			}			
 		};
 		observer.addMouseListener(clicker);
@@ -629,21 +630,5 @@ public class SakuraGhost
 	public String toString()
 	{
 		return String.format("nar=%s, current=%s", nar, currentShell);
-	}
-}
-
-/**
- * マウスリスナーの空の実装をします。
- * 
- * @since 1.0
- * @author tarchan
- */
-class MouseTracker extends MouseAdapter implements MouseWheelListener
-{
-	/**
-	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
-	 */
-	public void mouseWheelMoved(MouseWheelEvent mousewheelevent)
-	{
 	}
 }

@@ -41,6 +41,9 @@ public class NanikaMini extends Canvas
 	/** サムネール */
 	private BufferedImage thumbnail;
 
+	/** 枠なし */
+	private static boolean undecorated = false;
+
 	/**
 	 * 何か。を実体化します。
 	 * 
@@ -72,8 +75,17 @@ public class NanikaMini extends Canvas
 		JFrame frame = new JFrame("Nanika mini");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(mini);
-//		frame.setBackground(new Color(0, true));
-		frame.pack();
+		if (undecorated)
+		{
+			frame.setBackground(new Color(0, true));
+			frame.setUndecorated(true);
+			frame.setAlwaysOnTop(true);
+			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		}
+		else
+		{
+			frame.pack();
+		}
 		frame.setVisible(true);
 	}
 
@@ -190,8 +202,11 @@ public class NanikaMini extends Canvas
 		int arcH = 16;
 //		g.fillRoundRect(x, y, w, h, arcW, arcH);
 		RoundRectangle2D.Float rrect = new RoundRectangle2D.Float(x, y, w, h, arcW, arcH);
-		g.fill(rrect);
-		g.clip(rrect);
+		if (!undecorated)
+		{
+			g.fill(rrect);
+			g.clip(rrect);
+		}
 //		int right = x + w - 16;
 //		x += 128;
 //		int right = x + w;
@@ -201,7 +216,7 @@ public class NanikaMini extends Canvas
 		if (ghost != null) ghost.draw(g);
 
 		// サムネール＆ロゴを描画
-		if (thumbnail != null)
+		if (!undecorated && thumbnail != null)
 		{
 			g.setClip(null);
 			AffineTransform tx = new AffineTransform();
