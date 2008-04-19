@@ -42,7 +42,7 @@ public class NanikaMini extends Canvas
 	private BufferedImage thumbnail;
 
 	/** 枠なし */
-	private static boolean undecorated = false;
+	private boolean undecorated = false;
 
 	/**
 	 * 何か。を実体化します。
@@ -58,8 +58,6 @@ public class NanikaMini extends Canvas
 		}
 
 		final NanikaMini mini = new NanikaMini();
-//		mini.setSize(640, 480);
-//		mini.setSize(800, 600);
 		mini.setSize(800, 450);
 		mini.setNanika(args);
 
@@ -75,7 +73,7 @@ public class NanikaMini extends Canvas
 		JFrame frame = new JFrame("Nanika mini");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(mini);
-		if (undecorated)
+		if (mini.undecorated)
 		{
 			frame.setBackground(new Color(0, true));
 			frame.setUndecorated(true);
@@ -111,7 +109,8 @@ public class NanikaMini extends Canvas
 			ghost = new SakuraGhost();
 			for (String name : args)
 			{
-				ghost.install(name);
+				if (name.equals("-undecorated")) undecorated = true;
+				else ghost.install(name);
 			}
 
 			// サムネールを取得
@@ -181,36 +180,21 @@ public class NanikaMini extends Canvas
 	 */
 	private void paint2d(Graphics2D g)
 	{
-//		log.debug("Graphics2D=" + g.getClass().getName());
-		// sun.java2d.SunGraphics2D
-//		g.fill(sakura);
-//		g.fill(kero);
-
 		// 背景
 		Rectangle rect = g.getClipBounds();
-//		g.setColor(Color.white);
-//		g.fill(g.getClipBounds());
-		g.setColor(Color.green.darker().darker().darker());
-//		g.setColor(transparent);
-//		if (sakura != null) g.setColor(sakura.getBackground());
 		int x = 8;
 		int y = 8;
 		int w = rect.width - 16;
-//		int h = rect.height - 16 - 22;
 		int h = rect.height - 16;
 		int arcW = 16;
 		int arcH = 16;
-//		g.fillRoundRect(x, y, w, h, arcW, arcH);
 		RoundRectangle2D.Float rrect = new RoundRectangle2D.Float(x, y, w, h, arcW, arcH);
 		if (!undecorated)
 		{
+			g.setColor(Color.green.darker().darker().darker());
 			g.fill(rrect);
 			g.clip(rrect);
 		}
-//		int right = x + w - 16;
-//		x += 128;
-//		int right = x + w;
-//		int bottom = y + h;
 
 		// さくら＆ケロを描画
 		if (ghost != null) ghost.draw(g);
@@ -221,7 +205,7 @@ public class NanikaMini extends Canvas
 			g.setClip(null);
 			AffineTransform tx = new AffineTransform();
 			g.setTransform(tx);
-			g.drawImage(thumbnail, null, 8, 8);
+			g.drawImage(thumbnail, null, x, y);
 		}
 	}
 }
