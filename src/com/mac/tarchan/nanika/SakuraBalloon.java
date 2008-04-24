@@ -31,6 +31,8 @@ import com.mac.tarchan.nanika.nar.NanikaArchive;
 import com.mac.tarchan.nanika.nar.NanikaEntry;
 
 /**
+ * バルーンを実装します。
+ * 
  * @since 1.0
  * @author tarchan
  */
