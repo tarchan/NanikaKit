@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
@@ -22,6 +23,9 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -134,22 +138,56 @@ public class SakuraGhost
 	/**
 	 * 定期的に SHIORI にリクエストを送ります。
 	 */
-	public void requestForSecond()
+	protected void requestForSecond()
 	{
 		log.info("requestForSecond");
+
 		final SakuraScript sakura = new SakuraScript();
 		sakura.put("ghost", this);
 		sakura.put("system", this);
+
 		final ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+
+		// ポップアップメニュー
+		final JPopupMenu popupMenu = new JPopupMenu();
+		popupMenu.add(new AbstractAction("えんいー")
+		{
+			public void actionPerformed(ActionEvent actionevent)
+			{
+				String script = "\\-";
+				GhostRunner runner = new GhostRunner(sakura, script);
+				service.execute(runner);
+			}
+		});
 
 		MouseTracker clicker = new MouseTracker()
 		{
+			/**
+			 * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+			 */
+			@Override
+			public void mousePressed(MouseEvent mouseevent)
+			{
+				popupNow(mouseevent);
+			}
+
+			/**
+			 * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
+			 */
+			@Override
+			public void mouseReleased(MouseEvent mouseevent)
+			{
+				popupNow(mouseevent);
+			}
+
 			/**
 			 * @see com.mac.tarchan.event.MouseTracker#mouseClicked(java.awt.event.MouseEvent)
 			 */
 			@Override
 			public void mouseClicked(MouseEvent mouseevent)
 			{
+				if (popupMenu.isVisible()) return;
+
 //				reset();
 				String script = shiori.request("OnMouseClick");
 //				sakura.eval(script);
@@ -169,6 +207,14 @@ public class SakuraGhost
 				GhostRunner runner = new GhostRunner(sakura, script);
 				service.execute(runner);
 			}			
+
+			private void popupNow(MouseEvent mouseevent)
+			{
+				if (mouseevent.isPopupTrigger())
+				{
+					popupMenu.show(mouseevent.getComponent(), mouseevent.getX(), mouseevent.getY());
+				}
+			}
 		};
 		observer.addMouseListener(clicker);
 		observer.addMouseWheelListener(clicker);
@@ -343,7 +389,8 @@ public class SakuraGhost
 		nar = null;
 		currentShell = null;
 
-		return this;
+		// 終了
+		throw new RuntimeException("ghost closed");
 	}
 
 	/**

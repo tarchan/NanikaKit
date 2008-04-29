@@ -218,7 +218,7 @@ public class SakuraScript
 		else if (op.equals("-"))
 		{
 			// 即終了
-			invoke(ghost, "vanish");
+			invoke(ghost, "close");
 			return true;
 		}
 		else if (op.equals("!"))

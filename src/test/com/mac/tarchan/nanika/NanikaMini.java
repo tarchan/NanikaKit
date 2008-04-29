@@ -41,8 +41,8 @@ public class NanikaMini extends Canvas
 	/** サムネール */
 	private BufferedImage thumbnail;
 
-	/** 枠なし */
-	private boolean undecorated = false;
+	/** デスクトップモード */
+	private boolean desktop = false;
 
 	/**
 	 * 何か。を実体化します。
@@ -73,8 +73,14 @@ public class NanikaMini extends Canvas
 		JFrame frame = new JFrame("Nanika mini");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(mini);
-		if (mini.undecorated)
+		if (mini.desktop)
 		{
+//			GraphicsConfiguration gc = frame.getGraphicsConfiguration();
+//			GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+//			Rectangle desktop = gc.getBounds();
+//			frame.setBounds(desktop);
+//			System.out.println("desktop=" + desktop);
+
 			frame.setBackground(new Color(0, true));
 			frame.setUndecorated(true);
 			frame.setAlwaysOnTop(true);
@@ -85,6 +91,13 @@ public class NanikaMini extends Canvas
 			frame.pack();
 		}
 		frame.setVisible(true);
+	}
+
+	/**
+	 * ゴーストを実体化する表示エリアを構築します。
+	 */
+	public NanikaMini()
+	{
 	}
 
 	/**
@@ -109,7 +122,7 @@ public class NanikaMini extends Canvas
 			ghost = new SakuraGhost();
 			for (String name : args)
 			{
-				if (name.equals("-undecorated")) undecorated = true;
+				if (name.equals("-desktop")) desktop = true;
 				else ghost.install(name);
 			}
 
@@ -119,28 +132,11 @@ public class NanikaMini extends Canvas
 			// オブザーバーを設定
 			ghost.setObserver(this);
 
-			// ゴーストを実体化
-			// 華和梨
-			System.setProperty("com.mac.tarchan.nanika.shiori.dll", "test.com.mac.tarchan.nanika.NiseKawari");
+			// SHIORI の実装クラスを設定
 			// 里々
 			System.setProperty("com.mac.tarchan.nanika.satori.dll", "test.com.mac.tarchan.nanika.NiseSatori");
-			System.setProperty("com.mac.tarchan.nanika.ruthtsyua.dll", "test.com.mac.tarchan.nanika.NiseSatori");
-			// 偽栞
-			System.setProperty("com.mac.tarchan.nanika.niseshiori.dll", "com.mac.tarchan.nanika.SakuraShiori");
-			// 似非SHIORI
-			System.setProperty("com.mac.tarchan.nanika.ese-shiori.dll", "com.mac.tarchan.nanika.SakuraShiori");
-			// Psyche System
-			System.setProperty("com.mac.tarchan.nanika.psyche.dll", "com.mac.tarchan.nanika.SakuraShiori");
-			// 翡翠
-			System.setProperty("com.mac.tarchan.nanika.hisui.dll", "com.mac.tarchan.nanika.SakuraShiori");
-			// 美坂
-			System.setProperty("com.mac.tarchan.nanika.misaka.dll", "com.mac.tarchan.nanika.SakuraShiori");
-			System.setProperty("com.mac.tarchan.nanika.first.dll", "com.mac.tarchan.nanika.SakuraShiori");
-			// Piro "じゃばこ"
-			System.setProperty("com.mac.tarchan.nanika.piro.dll", "com.mac.tarchan.nanika.SakuraShiori");
-			// 文
-			System.setProperty("com.mac.tarchan.nanika.aya.dll", "com.mac.tarchan.nanika.SakuraShiori");
 
+			// ゴーストを実体化
 			log.info(String.format("\"%s\"を実体化します。", ghost.getName()));
 			ghost.materialize();
 
@@ -189,7 +185,7 @@ public class NanikaMini extends Canvas
 		int arcW = 16;
 		int arcH = 16;
 		RoundRectangle2D.Float rrect = new RoundRectangle2D.Float(x, y, w, h, arcW, arcH);
-		if (!undecorated)
+		if (!desktop)
 		{
 			g.setColor(Color.green.darker().darker().darker());
 			g.fill(rrect);
@@ -200,7 +196,7 @@ public class NanikaMini extends Canvas
 		if (ghost != null) ghost.draw(g);
 
 		// サムネール＆ロゴを描画
-		if (!undecorated && thumbnail != null)
+		if (!desktop && thumbnail != null)
 		{
 			g.setClip(null);
 			AffineTransform tx = new AffineTransform();
