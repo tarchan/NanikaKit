@@ -17,8 +17,6 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -269,7 +267,7 @@ public class NanikaArchive
 			String name = entry.getName();
 			if (name.matches(regex))
 			{
-				log.debug("entry=" + name);
+//				log.debug("entry=" + name);
 				out.add(getEntry(name));
 			}
 		}
@@ -296,23 +294,13 @@ public class NanikaArchive
 	 */
 	public SakuraSurface getSurface(int id)
 	{
-		File file = new File(getShellDirectory(), String.format("surface%s.png", id));
-		log.debug(id + "=" + file);
-		NanikaEntry entry = getEntry(file);
-		log.debug(id + "=" + entry.getName());
 		try
 		{
-			BufferedImage image = ImageIO.read(entry.getInputStream());
-			log.debug("image=" + image);
-			log.debug("image=" + image.getWidth() + "x" + image.getHeight() + ","  + image.getType() + "," + image.getColorModel());
-			int rgb = image.getRGB(0, 0);
-			log.debug("rgb=0x" + Integer.toHexString(rgb));
-			SakuraSurface surface = new SakuraSurface("" + id, image);
-			return surface;
+			return SakuraSurface.getSurface(id, this);
 		}
 		catch (IOException e)
 		{
-			log.error("image read error", e);
+			log.error("read surface error", e);
 			return null;
 		}
 	}

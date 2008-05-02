@@ -10,6 +10,7 @@ package com.mac.tarchan.nanika;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
@@ -19,12 +20,24 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.mac.tarchan.geom.WrappedPoint;
 import com.mac.tarchan.image.ChromakeyImageFilter;
+import com.mac.tarchan.nanika.nar.NanikaArchive;
+import com.mac.tarchan.nanika.nar.NanikaEntry;
 
 /**
  * このクラスは、サーフェスを表すために使用します。
@@ -46,6 +59,72 @@ public class SakuraSurface implements Shape
 	/** 矩形 */
 	private final Rectangle rect;
 
+	/** 当たり判定 */
+	private HashMap<String, Rectangle> collisions = new HashMap<String, Rectangle>();
+
+	/**
+	 * サーフェスをロードします。
+	 * 
+	 * @param id サーフェス ID
+	 * @param nar NAR アーカイブ
+	 * @return サーフェス
+	 * @throws IOException 入力エラーが発生した場合
+	 */
+	public static SakuraSurface getSurface(int id, NanikaArchive nar) throws IOException
+	{
+		File file = new File(nar.getShellDirectory(), String.format("surface%s.png", id));
+		log.debug(id + "=" + file);
+		NanikaEntry entry = nar.getEntry(file);
+//		log.debug(id + "=" + entry.getName());
+
+		String descript = loadDescript(id, nar);
+		BufferedImage image = ImageIO.read(entry.getInputStream());
+//		log.debug("image=" + image);
+//		log.debug("image=" + image.getWidth() + "x" + image.getHeight() + ","  + image.getType() + "," + image.getColorModel());
+//		int rgb = image.getRGB(0, 0);
+//		log.debug("rgb=0x" + Integer.toHexString(rgb));
+		SakuraSurface surface = new SakuraSurface("" + id, image, descript);
+		return surface;
+	}
+
+	/**
+	 * サーフェス定義をロードします。
+	 * 
+	 * @param id サーフェス ID
+	 * @param nar NAR アーカイブ
+	 * @return サーフェス定義
+	 * @throws IOException 入力エラーが発生した場合
+	 */
+	private static String loadDescript(int id, NanikaArchive nar) throws IOException
+	{
+		File file = new File(nar.getShellDirectory(), "surfaces.txt");
+		NanikaEntry entry = nar.getEntry(file);
+		if (entry != null)
+		{
+			Scanner s = new Scanner(entry.getInputStream(), "Shift_JIS");
+			String name = "surface" + id;
+			String find = s.findWithinHorizon("(" + Pattern.quote(name) + ")\\s*\\{\\s*([^{]*)\\}", 0);
+			if (find == null) return null;
+//			System.out.println("find=" + find);
+
+			MatchResult m = s.match();
+			String head = m.group(1);
+			String body = m.group(2);
+			log.debug("head=\"" + head + "\"");
+			log.debug("body=\"" + body + "\"");
+//			parseSurface(new Scanner(body));
+			return body;
+		}
+		else
+		{
+			file = new File(nar.getShellDirectory(), String.format("surface%s.txt", id));
+			entry = nar.getEntry(file);
+			if (entry == null) return null;
+
+			return null;
+		}
+	}
+
 	/**
 	 * サーフェスを構築します。
 	 * 
@@ -54,9 +133,99 @@ public class SakuraSurface implements Shape
 	 */
 	public SakuraSurface(String id, BufferedImage image)
 	{
+		this(id, image, null);
+	}
+
+	/**
+	 * サーフェスを構築します。
+	 * 
+	 * @param id サーフェス ID
+	 * @param image サーフェスイメージ
+	 * @param descript サーフェス定義
+	 */
+	public SakuraSurface(String id, BufferedImage image, String descript)
+	{
 		this.id = id;
 		this.image = image;
 		this.rect = new Rectangle(0, 0, image.getWidth(), image.getHeight());
+		if (descript != null) parseDescript(descript);
+	}
+
+	/**
+	 * サーフェス定義を解析します。
+	 * 
+	 * @param descript サーフェス定義
+	 */
+	private void parseDescript(String descript)
+	{
+		Scanner s = new Scanner(descript);
+		while (true)
+		{
+			if (s.hasNext("(collision.+?),(.+)"))
+			{
+				s.next("(collision.+?),(.+)");
+				MatchResult m = s.match();
+				String head = m.group(1);
+				String body = m.group(2);
+				String[] token = body.split(",");
+				int x1 = Integer.parseInt(token[0]);
+				int y1 = Integer.parseInt(token[1]);
+				int x2 = Integer.parseInt(token[2]);
+				int y2 = Integer.parseInt(token[3]);
+				String name = token[4];
+				Rectangle rect = new Rectangle(new Point(x1, y1));
+				rect.add(new Point(x2, y2));
+				System.out.println("当たり判定: " + head + ": " + name + ": " + rect);
+				collisions.put(name, rect);
+			}
+			else if (s.hasNext("(element.+?),(.+)"))
+			{
+				s.next("(element.+?),(.+)");
+				MatchResult m = s.match();
+				String head = m.group(1);
+				String body = m.group(2);
+				String[] token = body.split(",");
+				String type = token[0];
+				String filename = token[1];
+				int x = Integer.parseInt(token[2]);
+				int y = Integer.parseInt(token[3]);
+				Point p = new Point(x, y);
+				System.out.println("ベースサーフェス: " + head + ": " + Arrays.toString(new Object[]{type, filename, p}));
+			}
+			else if (s.hasNext("(.+?interval),(.+)"))
+			{
+				s.next("(.+?interval),(.+)");
+				MatchResult m = s.match();
+				String head = m.group(1);
+				String body = m.group(2);
+				System.out.println("アニメーション開始: " + head + ": " + Arrays.toString(body.split(",")));
+			}
+			else if (s.hasNext("(.+?pattern.+?),(.+)"))
+			{
+				s.next("(.+?pattern.+?),(.+)");
+				MatchResult m = s.match();
+				String head = m.group(1);
+				String body = m.group(2);
+				System.out.println("アニメーションパターン: " + head + ": " + Arrays.toString(body.split(",")));
+			}
+			else if (s.hasNext("(.+?option),(.+)"))
+			{
+				s.next("(.+?option),(.+)");
+				MatchResult m = s.match();
+				String head = m.group(1);
+				String body = m.group(2);
+				System.out.println("オプション: " + head + ": " + Arrays.toString(body.split(",")));
+			}
+			else if (s.hasNextLine())
+			{
+				String line = s.nextLine();
+				if (line.trim().length() > 0) System.out.println("未定義: " + line);
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
 
 	/**
@@ -108,7 +277,7 @@ public class SakuraSurface implements Shape
 	 */
 	public void draw(Graphics2D g, Rectangle bounds)
 	{
-		log.trace("draw surface: " + rect);
+//		log.trace("draw surface: " + rect);
 //		Rectangle rect = getBounds();
 //		g.drawImage(image, null, rect.x, rect.y);
 		Toolkit tk = Toolkit.getDefaultToolkit();
@@ -122,6 +291,15 @@ public class SakuraSurface implements Shape
 		else
 		{
 			g.drawImage(img, rect.x, rect.y, null);
+		}
+
+		g.setColor(Color.red);
+		for (Map.Entry<String, Rectangle> entry : collisions.entrySet())
+		{
+			String name = entry.getKey();
+			Rectangle rect = entry.getValue();
+			g.drawString(name, rect.x, rect.y);
+			g.draw(rect);
 		}
 	}
 
@@ -166,7 +344,7 @@ public class SakuraSurface implements Shape
 	 */
 	public Rectangle getBounds()
 	{
-		log.trace("bounds: " + rect.getBounds());
+//		log.trace("bounds: " + rect.getBounds());
 		return rect.getBounds();
 	}
 
@@ -185,7 +363,7 @@ public class SakuraSurface implements Shape
 	public PathIterator getPathIterator(AffineTransform affinetransform)
 	{
 //		log.trace("affinetransform: " + affinetransform, new Exception());
-		log.trace("affinetransform: " + affinetransform);
+//		log.trace("affinetransform: " + affinetransform);
 		return rect.getPathIterator(affinetransform);
 	}
 
