@@ -304,6 +304,25 @@ public class SakuraSurface implements Shape
 	}
 
 	/**
+	 * 当たった部分の名前を返します。
+	 * 
+	 * @param x X 座標
+	 * @param y Y 座標
+	 * @return 名前
+	 */
+	public String hit(int x, int y)
+	{
+		for (Map.Entry<String, Rectangle> entry : collisions.entrySet())
+		{
+			String name = entry.getKey();
+			Rectangle rect = entry.getValue();
+			if (rect.contains(x, y)) return name;
+		}
+
+		return null;
+	}
+
+	/**
 	 * @see java.awt.Shape#contains(java.awt.geom.Point2D)
 	 */
 	public boolean contains(Point2D point2d)

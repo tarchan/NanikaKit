@@ -255,7 +255,7 @@ public class NiseSatori extends SakuraShiori
 	 */
 	private void putTalk(String key, String value)
 	{
-		if (value == null || value.length() == 0) throw new IllegalArgumentException("value");
+		if (value == null || value.length() == 0) return;
 
 		value = replace(replace, value);
 		log.trace(String.format("\"%s\"=\"%s\"", key , value));
@@ -330,6 +330,8 @@ public class NiseSatori extends SakuraShiori
 	 */
 	public String eval(String talk)
 	{
+		if (talk == null) return null;
+
 		Scanner s = new Scanner(talk);
 		StringBuilder buf = new StringBuilder();
 		buf.append("\\0\\s[0]\\1\\s[10]");

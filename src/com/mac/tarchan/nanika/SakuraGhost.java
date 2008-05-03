@@ -331,8 +331,9 @@ public class SakuraGhost
 	 */
 	private void loadBalloon()
 	{
-//		currentNar.getBalloon();
 		SakuraBalloon balloon = nar.getBalloon("sakura");
+		if (balloon == null) return;
+
 		String name = balloon.getName();
 		String craftman = balloon.getCraftman();
 		log.info(String.format("loading Balloon named as \"%s\" crafted by \"%s\"", name, craftman));
