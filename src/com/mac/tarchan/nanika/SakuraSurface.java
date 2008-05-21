@@ -63,29 +63,55 @@ public class SakuraSurface implements Shape
 	private HashMap<String, Rectangle> collisions = new HashMap<String, Rectangle>();
 
 	/**
-	 * サーフェスをロードします。
+	 * サーフェスを構築します。
 	 * 
 	 * @param id サーフェス ID
-	 * @param nar NAR アーカイブ
-	 * @return サーフェス
-	 * @throws IOException 入力エラーが発生した場合
+	 * @param image サーフェスイメージ
 	 */
-	public static SakuraSurface getSurface(int id, NanikaArchive nar) throws IOException
+	public SakuraSurface(String id, BufferedImage image)
 	{
-		File file = new File(nar.getShellDirectory(), String.format("surface%s.png", id));
-		log.debug(id + "=" + file);
-		NanikaEntry entry = nar.getEntry(file);
-//		log.debug(id + "=" + entry.getName());
-
-		String descript = loadDescript(id, nar);
-		BufferedImage image = ImageIO.read(entry.getInputStream());
-//		log.debug("image=" + image);
-//		log.debug("image=" + image.getWidth() + "x" + image.getHeight() + ","  + image.getType() + "," + image.getColorModel());
-//		int rgb = image.getRGB(0, 0);
-//		log.debug("rgb=0x" + Integer.toHexString(rgb));
-		SakuraSurface surface = new SakuraSurface("" + id, image, descript);
-		return surface;
+		this(id, image, null);
 	}
+
+	/**
+	 * サーフェスを構築します。
+	 * 
+	 * @param id サーフェス ID
+	 * @param image サーフェスイメージ
+	 * @param descript サーフェス定義
+	 */
+	public SakuraSurface(String id, BufferedImage image, String descript)
+	{
+		this.id = id;
+		this.image = image;
+		this.rect = new Rectangle(0, 0, image.getWidth(), image.getHeight());
+		if (descript != null) parseDescript(descript);
+	}
+
+	/**
+		 * サーフェスをロードします。
+		 * 
+		 * @param id サーフェス ID
+		 * @param nar NAR アーカイブ
+		 * @return サーフェス
+		 * @throws IOException 入力エラーが発生した場合
+		 */
+		public static SakuraSurface getSurface(int id, NanikaArchive nar) throws IOException
+		{
+			File file = new File(nar.getShellDirectory(), String.format("surface%s.png", id));
+			log.debug(id + "=" + file);
+			NanikaEntry entry = nar.getEntry(file);
+	//		log.debug(id + "=" + entry.getName());
+	
+			String descript = loadDescript(id, nar);
+			BufferedImage image = ImageIO.read(entry.getInputStream());
+	//		log.debug("image=" + image);
+	//		log.debug("image=" + image.getWidth() + "x" + image.getHeight() + ","  + image.getType() + "," + image.getColorModel());
+	//		int rgb = image.getRGB(0, 0);
+	//		log.debug("rgb=0x" + Integer.toHexString(rgb));
+			SakuraSurface surface = new SakuraSurface("" + id, image, descript);
+			return surface;
+		}
 
 	/**
 	 * サーフェス定義をロードします。
@@ -126,32 +152,6 @@ public class SakuraSurface implements Shape
 	}
 
 	/**
-	 * サーフェスを構築します。
-	 * 
-	 * @param id サーフェス ID
-	 * @param image サーフェスイメージ
-	 */
-	public SakuraSurface(String id, BufferedImage image)
-	{
-		this(id, image, null);
-	}
-
-	/**
-	 * サーフェスを構築します。
-	 * 
-	 * @param id サーフェス ID
-	 * @param image サーフェスイメージ
-	 * @param descript サーフェス定義
-	 */
-	public SakuraSurface(String id, BufferedImage image, String descript)
-	{
-		this.id = id;
-		this.image = image;
-		this.rect = new Rectangle(0, 0, image.getWidth(), image.getHeight());
-		if (descript != null) parseDescript(descript);
-	}
-
-	/**
 	 * サーフェス定義を解析します。
 	 * 
 	 * @param descript サーフェス定義
@@ -175,7 +175,7 @@ public class SakuraSurface implements Shape
 				String name = token[4];
 				Rectangle rect = new Rectangle(new Point(x1, y1));
 				rect.add(new Point(x2, y2));
-				System.out.println("当たり判定: " + head + ": " + name + ": " + rect);
+				log.debug("当たり判定: " + head + ": " + name + ": " + rect);
 				collisions.put(name, rect);
 			}
 			else if (s.hasNext("(element.+?),(.+)"))
@@ -190,7 +190,7 @@ public class SakuraSurface implements Shape
 				int x = Integer.parseInt(token[2]);
 				int y = Integer.parseInt(token[3]);
 				Point p = new Point(x, y);
-				System.out.println("ベースサーフェス: " + head + ": " + Arrays.toString(new Object[]{type, filename, p}));
+				log.debug("ベースサーフェス: " + head + ": " + Arrays.toString(new Object[]{type, filename, p}));
 			}
 			else if (s.hasNext("(.+?interval),(.+)"))
 			{
@@ -198,7 +198,7 @@ public class SakuraSurface implements Shape
 				MatchResult m = s.match();
 				String head = m.group(1);
 				String body = m.group(2);
-				System.out.println("アニメーション開始: " + head + ": " + Arrays.toString(body.split(",")));
+				log.debug("アニメーション開始: " + head + ": " + Arrays.toString(body.split(",")));
 			}
 			else if (s.hasNext("(.+?pattern.+?),(.+)"))
 			{
@@ -206,7 +206,7 @@ public class SakuraSurface implements Shape
 				MatchResult m = s.match();
 				String head = m.group(1);
 				String body = m.group(2);
-				System.out.println("アニメーションパターン: " + head + ": " + Arrays.toString(body.split(",")));
+				log.debug("アニメーションパターン: " + head + ": " + Arrays.toString(body.split(",")));
 			}
 			else if (s.hasNext("(.+?option),(.+)"))
 			{
@@ -214,12 +214,12 @@ public class SakuraSurface implements Shape
 				MatchResult m = s.match();
 				String head = m.group(1);
 				String body = m.group(2);
-				System.out.println("オプション: " + head + ": " + Arrays.toString(body.split(",")));
+				log.debug("オプション: " + head + ": " + Arrays.toString(body.split(",")));
 			}
 			else if (s.hasNextLine())
 			{
 				String line = s.nextLine();
-				if (line.trim().length() > 0) System.out.println("未定義: " + line);
+				if (line.trim().length() > 0) log.debug("未定義: " + line);
 			}
 			else
 			{
@@ -247,16 +247,6 @@ public class SakuraSurface implements Shape
 	public void setLocation(int x, int y)
 	{
 		rect.setLocation(x, y);
-	}
-
-	/**
-	 * サーフェスの文字列表現を返します。
-	 * 
-	 * @return サーフェスの文字列表現
-	 */
-	public String toString()
-	{
-		return String.format("%s[%d, %d, %dx%d, 0x%x]", id, rect.x, rect.y, rect.width, rect.height, image.getRGB(0, 0));
 	}
 
 	/**
@@ -312,14 +302,27 @@ public class SakuraSurface implements Shape
 	 */
 	public String hit(int x, int y)
 	{
+//		System.out.println("location: " + x + ", " + y);
+//		System.out.println("shape: " + rect);
 		for (Map.Entry<String, Rectangle> entry : collisions.entrySet())
 		{
 			String name = entry.getKey();
 			Rectangle rect = entry.getValue();
+//			System.out.println("hit? " + name + ", " + rect);
 			if (rect.contains(x, y)) return name;
 		}
 
 		return null;
+	}
+
+	/**
+	 * サーフェスの文字列表現を返します。
+	 * 
+	 * @return サーフェスの文字列表現
+	 */
+	public String toString()
+	{
+		return String.format("%s[%d, %d, %dx%d, 0x%x]", id, rect.x, rect.y, rect.width, rect.height, image.getRGB(0, 0));
 	}
 
 	/**

@@ -8,6 +8,8 @@
 package com.mac.tarchan.nanika;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -70,6 +72,9 @@ public class SakuraShell
 
 	/** バルーン */
 	private SakuraBalloon balloon;
+
+	/** 表示座標 */
+	private Point loc = new Point();
 
 	/**
 	 * シェルを構築します。
@@ -263,14 +268,39 @@ public class SakuraShell
 	}
 
 	/**
+	 * 表示座標を設定します。
+	 * 
+	 * @param p 表示座標
+	 */
+	public void setLocation(Point p)
+	{
+		loc.setLocation(p);
+	}
+
+	/**
 	 * サーフェスを描画します。
 	 * 
 	 * @param g Graphics2D コンテキスト
 	 */
 	public void draw(Graphics2D g)
 	{
+		AffineTransform tx = new AffineTransform();
+		tx.translate(loc.x, loc.y);
+		g.setTransform(tx);
+
 		if (surface != null) surface.draw(g);
 		if (balloon != null) balloon.draw(g);
+	}
+
+	/**
+	 * 当たり判定します。
+	 * 
+	 * @param p 当たり判定座標
+	 * @return 当たりの場合は当たった部分の名前。そうでない場合は null
+	 */
+	public String hit(Point p)
+	{
+		return surface != null ? surface.hit(p.x - loc.x, p.y - loc.y) : null;
 	}
 
 //	/**

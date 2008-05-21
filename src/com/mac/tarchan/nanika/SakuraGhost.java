@@ -10,15 +10,16 @@ package com.mac.tarchan.nanika;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -48,7 +49,7 @@ public class SakuraGhost
 //	private LinkedHashMap<String, NanikaArchive> nar = new LinkedHashMap<String, NanikaArchive>();
 
 	/** シェル */
-	private LinkedHashMap<Integer, SakuraShell> shell = new LinkedHashMap<Integer, SakuraShell>();
+	private LinkedHashMap<Integer, SakuraShell> shells = new LinkedHashMap<Integer, SakuraShell>();
 
 	/** NAR ファイル */
 	private NanikaArchive nar;
@@ -187,6 +188,9 @@ public class SakuraGhost
 			public void mouseClicked(MouseEvent mouseevent)
 			{
 				if (popupMenu.isVisible()) return;
+
+				// 当たり判定
+				hit(mouseevent.getPoint());
 
 //				reset();
 				String script = shiori.request("OnMouseClick");
@@ -370,11 +374,11 @@ public class SakuraGhost
 //		log.debug("shell=" + shell);
 
 		// sakura
-		shell.put(0, sakura);
+		shells.put(0, sakura);
 //		shell.get(0).setSurface(0);
 
 		// kero
-		shell.put(1, kero);
+		shells.put(1, kero);
 //		shell.get(1).setSurface(10);
 	}
 
@@ -386,7 +390,7 @@ public class SakuraGhost
 	public SakuraGhost close()
 	{
 		log.info("close");
-		shell.clear();
+		shells.clear();
 		nar = null;
 		currentShell = null;
 
@@ -402,7 +406,7 @@ public class SakuraGhost
 	public SakuraGhost vanish()
 	{
 		log.info("vanish");
-		shell.clear();
+		shells.clear();
 		nar = null;
 		currentShell = null;
 
@@ -433,7 +437,7 @@ public class SakuraGhost
 	public SakuraGhost setScope(int scope)
 	{
 		log.debug("scope=" + scope);
-		currentShell = shell.get(scope);
+		currentShell = shells.get(scope);
 
 		return this;
 	}
@@ -521,7 +525,7 @@ public class SakuraGhost
 	 */
 	public SakuraGhost talk(String message)
 	{
-		log.debug(message);
+//		log.debug(message);
 //		if (currentShell.getBalloon() != null)
 //		{
 //			currentShell.getBalloon().append(message);
@@ -600,11 +604,11 @@ public class SakuraGhost
 	 */
 	public void draw(Graphics2D g)
 	{
-		SakuraShell sakura = shell.get(0);
-		SakuraShell kero = shell.get(1);
+		SakuraShell sakura = shells.get(0);
+		SakuraShell kero = shells.get(1);
 
 		Rectangle clip = g.getClipBounds();
-		log.debug("clip=" + clip);
+//		log.debug("clip=" + clip);
 		int x = clip.x;
 		int y = clip.y;
 		int right = x + clip.width;
@@ -613,17 +617,19 @@ public class SakuraGhost
 		// サクラ
 		if (sakura != null && sakura.getSurface() != null)
 		{
-			AffineTransform tx = new AffineTransform();
+//			AffineTransform tx = new AffineTransform();
 //			tx.scale(0.8, 0.8);
 //			Rectangle rect = sakura.getBounds();
-			Rectangle rect = tx.createTransformedShape(sakura.getSurface()).getBounds();
+//			Rectangle rect = tx.createTransformedShape(sakura.getSurface()).getBounds();
+			Rectangle rect = sakura.getSurface().getBounds();
 //			log.debug("rect=" + rect);
 			rect.x = right - rect.width;
 			rect.y = bottom - rect.height;
 //			tx.shear(-0.5, 0);
-			tx.rotate(Math.toRadians(0), right - rect.width / 2, bottom);
-			tx.translate(rect.x, rect.y);
-			g.setTransform(tx);
+//			tx.rotate(Math.toRadians(0), right - rect.width / 2, bottom);
+//			tx.translate(rect.x, rect.y);
+//			g.setTransform(tx);
+			sakura.setLocation(rect.getLocation());
 			sakura.draw(g);
 			right = rect.x;
 		}
@@ -631,14 +637,15 @@ public class SakuraGhost
 		// ケロ
 		if (kero != null && kero.getSurface() != null)
 		{
-			AffineTransform tx = new AffineTransform();
+//			AffineTransform tx = new AffineTransform();
 			Rectangle rect = kero.getSurface().getBounds();
 //			rect.x = x + (right - x) / 2 - rect.width / 2;
 			rect.x = right - rect.width;
 			rect.y = bottom - rect.height;
-			tx.translate(rect.x, rect.y);
+//			tx.translate(rect.x, rect.y);
 //			tx.shear(0.5, 0);
-			g.setTransform(tx);
+//			g.setTransform(tx);
+			kero.setLocation(rect.getLocation());
 			kero.draw(g);
 		}
 
@@ -657,6 +664,25 @@ public class SakuraGhost
 			}
 
 			repaint();
+		}
+	}
+
+	/**
+	 * 当たり判定を確認します。
+	 * 
+	 * @param p クリック位置
+	 */
+	public void hit(Point p)
+	{
+		System.out.println("click: " + p);
+		log.debug("hit: " + p + ", shell: " + shells);
+		for (Map.Entry<Integer, SakuraShell> entry : shells.entrySet())
+		{
+			int id = entry.getKey();
+			SakuraShell s = entry.getValue();
+			String name = s.hit(p);
+			if (name != null) System.out.println("hit! " + name);
+			log.debug("id: " + id + ", shell: " + s);
 		}
 	}
 
