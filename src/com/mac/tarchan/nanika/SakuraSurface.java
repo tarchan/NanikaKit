@@ -41,13 +41,13 @@ import com.mac.tarchan.nanika.nar.NanikaEntry;
 
 /**
  * このクラスは、サーフェスを表すために使用します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 public class SakuraSurface implements Shape
 {
-	/** ロガー */
+	/** ログ */
 	private static final Log log = LogFactory.getLog(SakuraSurface.class);
 
 	/** サーフェス ID */
@@ -64,7 +64,7 @@ public class SakuraSurface implements Shape
 
 	/**
 	 * サーフェスを構築します。
-	 * 
+	 *
 	 * @param id サーフェス ID
 	 * @param image サーフェスイメージ
 	 */
@@ -75,7 +75,7 @@ public class SakuraSurface implements Shape
 
 	/**
 	 * サーフェスを構築します。
-	 * 
+	 *
 	 * @param id サーフェス ID
 	 * @param image サーフェスイメージ
 	 * @param descript サーフェス定義
@@ -89,33 +89,33 @@ public class SakuraSurface implements Shape
 	}
 
 	/**
-		 * サーフェスをロードします。
-		 * 
-		 * @param id サーフェス ID
-		 * @param nar NAR アーカイブ
-		 * @return サーフェス
-		 * @throws IOException 入力エラーが発生した場合
-		 */
-		public static SakuraSurface getSurface(int id, NanikaArchive nar) throws IOException
-		{
-			File file = new File(nar.getShellDirectory(), String.format("surface%s.png", id));
-			log.debug(id + "=" + file);
-			NanikaEntry entry = nar.getEntry(file);
-	//		log.debug(id + "=" + entry.getName());
-	
-			String descript = loadDescript(id, nar);
-			BufferedImage image = ImageIO.read(entry.getInputStream());
-	//		log.debug("image=" + image);
-	//		log.debug("image=" + image.getWidth() + "x" + image.getHeight() + ","  + image.getType() + "," + image.getColorModel());
-	//		int rgb = image.getRGB(0, 0);
-	//		log.debug("rgb=0x" + Integer.toHexString(rgb));
-			SakuraSurface surface = new SakuraSurface("" + id, image, descript);
-			return surface;
-		}
+	 * サーフェスをロードします。
+	 *
+	 * @param id サーフェス ID
+	 * @param nar NAR アーカイブ
+	 * @return サーフェス
+	 * @throws IOException 入力エラーが発生した場合
+	 */
+	public static SakuraSurface getSurface(int id, NanikaArchive nar) throws IOException
+	{
+		File file = new File(nar.getShellDirectory(), String.format("surface%s.png", id));
+		log.debug(id + "=" + file);
+		NanikaEntry entry = nar.getEntry(file);
+//		log.debug(id + "=" + entry.getName());
+
+		String descript = loadDescript(id, nar);
+		BufferedImage image = ImageIO.read(entry.getInputStream());
+//		log.debug("image=" + image);
+//		log.debug("image=" + image.getWidth() + "x" + image.getHeight() + ","  + image.getType() + "," + image.getColorModel());
+//		int rgb = image.getRGB(0, 0);
+//		log.debug("rgb=0x" + Integer.toHexString(rgb));
+		SakuraSurface surface = new SakuraSurface("" + id, image, descript);
+		return surface;
+	}
 
 	/**
 	 * サーフェス定義をロードします。
-	 * 
+	 *
 	 * @param id サーフェス ID
 	 * @param nar NAR アーカイブ
 	 * @return サーフェス定義
@@ -153,7 +153,7 @@ public class SakuraSurface implements Shape
 
 	/**
 	 * サーフェス定義を解析します。
-	 * 
+	 *
 	 * @param descript サーフェス定義
 	 */
 	private void parseDescript(String descript)
@@ -230,7 +230,7 @@ public class SakuraSurface implements Shape
 
 	/**
 	 * 背景色を返します。
-	 * 
+	 *
 	 * @return 背景色
 	 */
 	public Color getBackground()
@@ -240,7 +240,7 @@ public class SakuraSurface implements Shape
 
 	/**
 	 * 位置を設定します。
-	 * 
+	 *
 	 * @param x X 座標
 	 * @param y Y 座標
 	 */
@@ -251,7 +251,7 @@ public class SakuraSurface implements Shape
 
 	/**
 	 * このサーフェスのイメージを描画します。
-	 * 
+	 *
 	 * @param g Graphics2D コンテキスト
 	 */
 	public void draw(Graphics2D g)
@@ -261,7 +261,7 @@ public class SakuraSurface implements Shape
 
 	/**
 	 * このサーフェスのイメージを描画します。
-	 * 
+	 *
 	 * @param g Graphics2D コンテキスト
 	 * @param bounds 描画範囲
 	 */
@@ -283,19 +283,19 @@ public class SakuraSurface implements Shape
 			g.drawImage(img, rect.x, rect.y, null);
 		}
 
-		g.setColor(Color.red);
-		for (Map.Entry<String, Rectangle> entry : collisions.entrySet())
-		{
-			String name = entry.getKey();
-			Rectangle rect = entry.getValue();
-			g.drawString(name, rect.x, rect.y);
-			g.draw(rect);
-		}
+//		g.setColor(Color.red);
+//		for (Map.Entry<String, Rectangle> entry : collisions.entrySet())
+//		{
+//			String name = entry.getKey();
+//			Rectangle rect = entry.getValue();
+//			g.drawString(name, rect.x, rect.y);
+//			g.draw(rect);
+//		}
 	}
 
 	/**
 	 * 当たった部分の名前を返します。
-	 * 
+	 *
 	 * @param x X 座標
 	 * @param y Y 座標
 	 * @return 名前
@@ -317,7 +317,7 @@ public class SakuraSurface implements Shape
 
 	/**
 	 * サーフェスの文字列表現を返します。
-	 * 
+	 *
 	 * @return サーフェスの文字列表現
 	 */
 	public String toString()

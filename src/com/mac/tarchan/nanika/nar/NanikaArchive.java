@@ -25,14 +25,14 @@ import com.mac.tarchan.nanika.SakuraSurface;
 
 /**
  * このクラスは、NAR ファイルからエントリを読み込むために使用します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  * @see ZipFile
  */
 public class NanikaArchive
 {
-	/** ロガー */
+	/** ログ */
 	private static final Log log = LogFactory.getLog(NanikaArchive.class);
 
 	/** 次候補 NAR ファイル */
@@ -46,7 +46,7 @@ public class NanikaArchive
 
 	/**
 	 * NanikaArchive オブジェクトを構築します。
-	 * 
+	 *
 	 * @param name NAR ファイル名
 	 * @throws IOException 入力エラーが発生した場合
 	 */
@@ -77,7 +77,7 @@ public class NanikaArchive
 
 	/**
 	 * 次のアーカイブを設定します。
-	 * 
+	 *
 	 * @param nar 次のアーカイブ
 	 * @return このアーカイブへの参照
 	 */
@@ -91,7 +91,7 @@ public class NanikaArchive
 
 	/**
 	 * 指定したタイプのアーカイブを返します。
-	 * 
+	 *
 	 * @param type アーカイブのタイプ
 	 * @return 指定したタイプのアーカイブ
 	 */
@@ -109,7 +109,7 @@ public class NanikaArchive
 
 	/**
 	 * デフォルトのプロパティーを返します。
-	 * 
+	 *
 	 * @return プロパティー
 	 */
 	private static Properties getDefaults()
@@ -148,7 +148,7 @@ public class NanikaArchive
 
 	/**
 	 * プロパティーを返します。
-	 * 
+	 *
 	 * @return プロパティー
 	 */
 	public Properties getProperties()
@@ -158,7 +158,7 @@ public class NanikaArchive
 
 	/**
 	 * プロパティーを返します。
-	 * 
+	 *
 	 * @param key キー
 	 * @return プロパティー
 	 */
@@ -174,7 +174,7 @@ public class NanikaArchive
 
 	/**
 	 * NAR ファイルのタイプを返します。
-	 * 
+	 *
 	 * @return NAR ファイルのタイプs
 	 */
 	public String getType()
@@ -184,7 +184,7 @@ public class NanikaArchive
 
 	/**
 	 * ゴーストのディレクトリを返します。
-	 * 
+	 *
 	 * @return ゴーストのディレクトリ
 	 */
 	public File getGhostDirectory()
@@ -196,7 +196,7 @@ public class NanikaArchive
 
 	/**
 	 * シェルのディレクトリを返します。
-	 * 
+	 *
 	 * @return シェルのディレクトリ
 	 */
 	public File getShellDirectory()
@@ -215,7 +215,7 @@ public class NanikaArchive
 
 	/**
 	 * バルーンのディレクトリを返します。
-	 * 
+	 *
 	 * @return バルーンのディレクトリ
 	 */
 	public File getBalloonDirectory()
@@ -225,7 +225,7 @@ public class NanikaArchive
 
 	/**
 	 * NAR ファイルエントリを返します。
-	 * 
+	 *
 	 * @param name エントリ名
 	 * @return NAR ファイルエントリ
 	 */
@@ -236,7 +236,7 @@ public class NanikaArchive
 
 	/**
 	 * NAR ファイルエントリを返します。
-	 * 
+	 *
 	 * @param file エントリファイル
 	 * @return NAR ファイルエントリ
 	 */
@@ -251,7 +251,7 @@ public class NanikaArchive
 
 	/**
 	 * NAR エントリのリストを返します。
-	 * 
+	 *
 	 * @param regex 正規表現
 	 * @return NAR エントリのリスト
 	 */
@@ -277,7 +277,7 @@ public class NanikaArchive
 
 	/**
 	 * NAR エントリのリストを返します。
-	 * 
+	 *
 	 * @param filter ファイルフィルタ
 	 * @return NAR エントリのリスト
 	 */
@@ -288,7 +288,7 @@ public class NanikaArchive
 
 	/**
 	 * サーフェスを取得します。
-	 * 
+	 *
 	 * @param id サーフェス ID
 	 * @return サーフェス
 	 */
@@ -307,7 +307,7 @@ public class NanikaArchive
 
 	/**
 	 * バルーンを取得します。
-	 * 
+	 *
 	 * @param name sakura または kero
 	 * @return バルーン
 	 */
@@ -332,7 +332,7 @@ public class NanikaArchive
 
 	/**
 	 * サムネールを返します。
-	 * 
+	 *
 	 * @return サムネール
 	 */
 	public BufferedImage getThumbnail()
@@ -353,7 +353,7 @@ public class NanikaArchive
 
 	/**
 	 * README を読み込みます。
-	 * 
+	 *
 	 * @return README
 	 */
 	public String getReadme()
@@ -372,7 +372,7 @@ public class NanikaArchive
 
 	/**
 	 * NAR ファイルの文字列表現を返します。
-	 * 
+	 *
 	 * @return NAR ファイルの文字列表現
 	 */
 	public String toString()

@@ -36,13 +36,13 @@ import com.mac.tarchan.nanika.nar.NanikaArchive;
 
 /**
  * このクラスは、ゴーストを実装します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 public class SakuraGhost
 {
-	/** ロガー */
+	/** ログ */
 	private static final Log log = LogFactory.getLog(SakuraGhost.class);
 
 //	/** アーカイブ */
@@ -65,7 +65,7 @@ public class SakuraGhost
 
 	/**
 	 * オブザーバーを設定します。
-	 * 
+	 *
 	 * @param observer オブザーバー
 	 * @return このゴーストへの参照
 	 */
@@ -78,7 +78,7 @@ public class SakuraGhost
 
 	/**
 	 * NAR ファイルをインストールします。
-	 * 
+	 *
 	 * @param name NAR ファイル名
 	 * @return このゴーストへの参照
 	 * @throws IOException インストール中にエラーが発生した場合
@@ -100,7 +100,7 @@ public class SakuraGhost
 
 	/**
 	 * ゴーストの名前を返します。
-	 * 
+	 *
 	 * @return ゴーストの名前
 	 */
 	public String getName()
@@ -110,7 +110,7 @@ public class SakuraGhost
 
 	/**
 	 * ゴーストの姿を現します。
-	 * 
+	 *
 	 * @return このゴーストへの参照
 	 */
 	public SakuraGhost materialize()
@@ -153,6 +153,9 @@ public class SakuraGhost
 		final JPopupMenu popupMenu = new JPopupMenu();
 		popupMenu.add(new AbstractAction("えんいー")
 		{
+			 /** シリアルバージョンID */
+			private static final long serialVersionUID = 8146721621170583261L;
+
 			public void actionPerformed(ActionEvent actionevent)
 			{
 				String script = "\\-";
@@ -210,7 +213,7 @@ public class SakuraGhost
 //				sakura.eval(script);
 				GhostRunner runner = new GhostRunner(sakura, script);
 				service.execute(runner);
-			}			
+			}
 
 			private void popupNow(MouseEvent mouseevent)
 			{
@@ -242,7 +245,7 @@ public class SakuraGhost
 
 	/**
 	 * さくらスクリプトを実行します。
-	 * 
+	 *
 	 * @since 1.0
 	 * @author tarchan
 	 */
@@ -256,7 +259,7 @@ public class SakuraGhost
 
 		/**
 		 * さくらスクリプト実行オブジェクトを構築します。
-		 * 
+		 *
 		 * @param sakura スクリプトエンジン
 		 * @param script さくらスクリプト
 		 */
@@ -273,7 +276,7 @@ public class SakuraGhost
 		{
 			reset();
 			sakura.eval(script);
-		}		
+		}
 	}
 
 	/**
@@ -384,7 +387,7 @@ public class SakuraGhost
 
 	/**
 	 * ゴーストの姿を消します。
-	 * 
+	 *
 	 * @return このゴーストへの参照
 	 */
 	public SakuraGhost close()
@@ -400,7 +403,7 @@ public class SakuraGhost
 
 	/**
 	 * ゴーストを消滅させます。
-	 * 
+	 *
 	 * @return このゴーストへの参照
 	 */
 	public SakuraGhost vanish()
@@ -415,7 +418,7 @@ public class SakuraGhost
 
 	/**
 	 * ゴーストの状態をリセットします。
-	 * 
+	 *
 	 * @return このゴーストへの参照
 	 */
 	public SakuraGhost reset()
@@ -430,7 +433,7 @@ public class SakuraGhost
 
 	/**
 	 * スコープを変更します。
-	 * 
+	 *
 	 * @param scope スコープ番号
 	 * @return このゴーストへの参照
 	 */
@@ -444,7 +447,7 @@ public class SakuraGhost
 
 	/**
 	 * 現在のスコープのサーフェスを変更します。
-	 * 
+	 *
 	 * @param id サーフェス ID
 	 * @return このゴーストへの参照
 	 */
@@ -459,7 +462,7 @@ public class SakuraGhost
 
 	/**
 	 * 現在のスコープのバルーンサーフェスを変更します。
-	 * 
+	 *
 	 * @param id バルーンサーフェス ID
 	 * @return このゴーストへの参照
 	 */
@@ -477,7 +480,7 @@ public class SakuraGhost
 
 	/**
 	 * ウエイト
-	 * 
+	 *
 	 * @param ms ウエイト時間
 	 * @return このゴーストへの参照
 	 */
@@ -497,7 +500,7 @@ public class SakuraGhost
 				}
 			}
 		});
-	
+
 		return this;
 	}
 
@@ -506,7 +509,7 @@ public class SakuraGhost
 
 	/**
 	 * トーク中かどうか判定します。
-	 * 
+	 *
 	 * @return トーク中の場合は true
 	 */
 	public boolean isTalking()
@@ -519,7 +522,7 @@ public class SakuraGhost
 
 	/**
 	 * 現在のスコープのバルーンにメッセージを表示します。
-	 * 
+	 *
 	 * @param message メッセージ
 	 * @return このゴーストへの参照
 	 */
@@ -551,7 +554,7 @@ public class SakuraGhost
 
 	/**
 	 * 改行
-	 * 
+	 *
 	 * @return このゴーストへの参照
 	 */
 	public SakuraGhost newLine()
@@ -567,7 +570,7 @@ public class SakuraGhost
 
 	/**
 	 * 通常の半分の高さだけ改行
-	 * 
+	 *
 	 * @return このゴーストへの参照
 	 */
 	public SakuraGhost halfLine()
@@ -583,7 +586,7 @@ public class SakuraGhost
 
 	/**
 	 * 現在のスコープ表示域をクリアします。
-	 * 
+	 *
 	 * @return このゴーストへの参照
 	 */
 	public SakuraGhost clear()
@@ -599,7 +602,7 @@ public class SakuraGhost
 
 	/**
 	 * ゴーストを描画します。
-	 * 
+	 *
 	 * @param g Graphics2D コンテキスト
 	 */
 	public void draw(Graphics2D g)
@@ -669,7 +672,7 @@ public class SakuraGhost
 
 	/**
 	 * 当たり判定を確認します。
-	 * 
+	 *
 	 * @param p クリック位置
 	 */
 	public void hit(Point p)
@@ -688,7 +691,7 @@ public class SakuraGhost
 
 	/**
 	 * サムネールを返します。
-	 * 
+	 *
 	 * @return サムネール
 	 */
 	public BufferedImage getThumbnail()
@@ -698,7 +701,7 @@ public class SakuraGhost
 
 	/**
 	 * ゴーストの文字列表現を返します。
-	 * 
+	 *
 	 * @return ゴーストの文字列表現
 	 */
 	public String toString()

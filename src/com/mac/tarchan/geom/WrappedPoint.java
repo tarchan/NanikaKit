@@ -12,12 +12,15 @@ import java.awt.Rectangle;
 
 /**
  * 範囲限定座標を表します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 public class WrappedPoint extends Point
 {
+	/** シリアルバージョンID */
+	private static final long serialVersionUID = 4358222952113690978L;
+
 	/** オリジナルの座標 */
 	private Point point;
 
@@ -26,7 +29,7 @@ public class WrappedPoint extends Point
 
 	/**
 	 * 範囲限定座標を構築します。
-	 * 
+	 *
 	 * @param x X 座標
 	 * @param y Y 座標
 	 */
@@ -46,7 +49,7 @@ public class WrappedPoint extends Point
 
 	/**
 	 * 座標を折り返す範囲を設定します。
-	 * 
+	 *
 	 * @param bounds 座標を折り返す範囲
 	 * @return この座標への参照
 	 */

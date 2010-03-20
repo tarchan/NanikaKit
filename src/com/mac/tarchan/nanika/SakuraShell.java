@@ -26,13 +26,13 @@ import com.mac.tarchan.nanika.nar.NanikaEntry;
 
 /**
  * このクラスは、シェルを表すために使用します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 public class SakuraShell
 {
-	/** ロガー */
+	/** ログ */
 	private static final Log log = LogFactory.getLog(SakuraShell.class);
 
 	/** シェル名 */
@@ -78,7 +78,7 @@ public class SakuraShell
 
 	/**
 	 * シェルを構築します。
-	 * 
+	 *
 	 * @param name シェル名
 	 * @param nar NAR ファイル
 	 */
@@ -113,7 +113,7 @@ public class SakuraShell
 
 	/**
 	 * シェルを構築します。
-	 * 
+	 *
 	 * @param name シェル名
 	 * @param pair ペアのシェル
 	 */
@@ -149,12 +149,12 @@ public class SakuraShell
 
 		// collision
 		NanikaEntry[] txt = nar.list(new File(shellDir, "surface.+\\.txt").getPath());
-		log.debug("txt=" + txt.length + "," + Arrays.toString(txt));		
+		log.debug("txt=" + txt.length + "," + Arrays.toString(txt));
 	}
 
 	/**
 	 * バルーンを読み込みます。
-	 * 
+	 *
 	 * @param name 名前
 	 */
 	private void loadBalloon(String name)
@@ -186,7 +186,7 @@ public class SakuraShell
 
 	/**
 	 * シェルの ID を返します。
-	 * 
+	 *
 	 * @return シェルの ID
 	 */
 	public String getId()
@@ -196,7 +196,7 @@ public class SakuraShell
 
 	/**
 	 * シェルの名前を返します。
-	 * 
+	 *
 	 * @return シェルの名前
 	 */
 	public String getName()
@@ -206,7 +206,7 @@ public class SakuraShell
 
 	/**
 	 * シェルの作成者名を返します。
-	 * 
+	 *
 	 * @return シェルの作成者名
 	 */
 	public String getCraftman()
@@ -216,7 +216,7 @@ public class SakuraShell
 
 //	/**
 //	 * シェルのタイプを返します。
-//	 * 
+//	 *
 //	 * @return シェルのタイプ
 //	 */
 //	public String getType()
@@ -226,7 +226,7 @@ public class SakuraShell
 
 	/**
 	 * サーフェスの数を返します。
-	 * 
+	 *
 	 * @return サーフェスの数
 	 */
 	public int getSurfaceCount()
@@ -236,7 +236,7 @@ public class SakuraShell
 
 	/**
 	 * シェルのサーフェスを変更します。
-	 * 
+	 *
 	 * @param id サーフェス ID
 	 */
 	public void setSurface(int id)
@@ -249,7 +249,7 @@ public class SakuraShell
 
 	/**
 	 * サーフェスを返します。
-	 * 
+	 *
 	 * @return サーフェス
 	 */
 	public SakuraSurface getSurface()
@@ -259,7 +259,7 @@ public class SakuraShell
 
 	/**
 	 * バルーンを返します。
-	 * 
+	 *
 	 * @return バルーン
 	 */
 	public SakuraBalloon getBalloon()
@@ -269,7 +269,7 @@ public class SakuraShell
 
 	/**
 	 * 表示座標を設定します。
-	 * 
+	 *
 	 * @param p 表示座標
 	 */
 	public void setLocation(Point p)
@@ -279,7 +279,7 @@ public class SakuraShell
 
 	/**
 	 * サーフェスを描画します。
-	 * 
+	 *
 	 * @param g Graphics2D コンテキスト
 	 */
 	public void draw(Graphics2D g)
@@ -294,7 +294,7 @@ public class SakuraShell
 
 	/**
 	 * 当たり判定します。
-	 * 
+	 *
 	 * @param p 当たり判定座標
 	 * @return 当たりの場合は当たった部分の名前。そうでない場合は null
 	 */
@@ -305,7 +305,7 @@ public class SakuraShell
 
 //	/**
 //	 * 吹き出しの位置を返します。
-//	 * 
+//	 *
 //	 * @param bounds シェルの表示範囲
 //	 * @return バルーンオフセット
 //	 */
@@ -328,7 +328,7 @@ public class SakuraShell
 
 	/**
 	 * シェルの文字列表現を返します。
-	 * 
+	 *
 	 * @return シェルの文字列表現
 	 */
 	public String toString()

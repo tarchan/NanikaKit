@@ -29,13 +29,13 @@ import com.mac.tarchan.nanika.nar.NanikaEntry;
 
 /**
  * 里々を実装します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 public class NiseSatori extends SakuraShiori
 {
-	/** ロガー */
+	/** ログ */
 	private static final Log log = LogFactory.getLog(NiseSatori.class);
 
 	/** トーク辞書 */
@@ -55,7 +55,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * SHIORI をロードします。
-	 * 
+	 *
 	 * @param nar NAR ファイル
 	 * @return ロードできた場合は true、そうでない場合は false
 	 */
@@ -94,7 +94,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * 読み替え辞書を読み込みます。
-	 * 
+	 *
 	 * @param entry 辞書ファイル
 	 * @return 辞書の内容
 	 */
@@ -127,7 +127,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * 読み替えた文字列を返します。
-	 * 
+	 *
 	 * @param map 読み替え辞書
 	 * @param value 文字列
 	 * @return 読み替えた文字列
@@ -146,7 +146,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * 里々辞書を読み込みます。
-	 * 
+	 *
 	 * @param entry 辞書ファイル
 	 */
 	private void loadDic(NanikaEntry entry)
@@ -197,7 +197,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * トークを読み込みます。
-	 * 
+	 *
 	 * @param s スキャナー
 	 * @param line 最初の行
 	 * @return 次の行
@@ -228,7 +228,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * 単語を読み込みます。
-	 * 
+	 *
 	 * @param s スキャナー
 	 * @param line 最初の行
 	 * @return 次の行
@@ -249,7 +249,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * トークを辞書に追加します。
-	 * 
+	 *
 	 * @param key キー
 	 * @param value トーク
 	 */
@@ -264,7 +264,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * 単語を辞書に追加します。
-	 * 
+	 *
 	 * @param key キー
 	 * @param value 単語
 	 */
@@ -281,7 +281,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * トークを返します。
-	 * 
+	 *
 	 * @param key キー
 	 * @return トーク
 	 */
@@ -292,7 +292,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * 単語を返します。
-	 * 
+	 *
 	 * @param key キー
 	 * @return 単語
 	 */
@@ -303,7 +303,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * さくらスクリプトを返します。
-	 * 
+	 *
 	 * @param command コマンド
 	 * @return さくらスクリプト
 	 */
@@ -324,7 +324,7 @@ public class NiseSatori extends SakuraShiori
 
 	/**
 	 * 里々スクリプトをさくらスクリプトに変換します。
-	 * 
+	 *
 	 * @param talk 里々スクリプト
 	 * @return さくらスクリプト
 	 */
@@ -415,18 +415,21 @@ public class NiseSatori extends SakuraShiori
 
 /**
  * 里々辞書を実装します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 class SatoriMap extends LinkedHashMap<String, List<String>>
 {
+	/** シリアルバージョンID */
+	private static final long serialVersionUID = -2204621814090692392L;
+
 	/** 乱数ジェネレータ */
 	private Random rand = new Random();
 
 	/**
 	 * トークを辞書に追加します。
-	 * 
+	 *
 	 * @param key キー
 	 * @param value トーク
 	 * @return このマップへの参照
@@ -449,7 +452,7 @@ class SatoriMap extends LinkedHashMap<String, List<String>>
 
 	/**
 	 * トークを返します。
-	 * 
+	 *
 	 * @param key キー
 	 * @return トーク
 	 */

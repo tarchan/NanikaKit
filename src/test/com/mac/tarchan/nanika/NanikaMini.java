@@ -26,13 +26,16 @@ import com.mac.tarchan.nanika.SakuraGhost;
 
 /**
  * 何か。ミニ劇場を実装します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 public class NanikaMini extends Canvas
 {
-	/** ロガー */
+	/** シリアルバージョンID */
+	private static final long serialVersionUID = -5743971128293967183L;
+
+	/** ログ */
 	private static final Log log = LogFactory.getLog(NanikaMini.class);
 
 	/** ゴースト */
@@ -46,7 +49,7 @@ public class NanikaMini extends Canvas
 
 	/**
 	 * 何か。を実体化します。
-	 * 
+	 *
 	 * @param args <nar ファイル名>
 	 */
 	public static void main(String[] args)
@@ -102,7 +105,7 @@ public class NanikaMini extends Canvas
 
 	/**
 	 * NAR ファイルを読み込みます。
-	 * 
+	 *
 	 * @param args NAR ファイルリスト
 	 */
 	public void setNanika(String[] args)
@@ -151,7 +154,7 @@ public class NanikaMini extends Canvas
 
 	/**
 	 * ゴーストの名前を返します。
-	 * 
+	 *
 	 * @return ゴーストの名前
 	 */
 	public String getName()
@@ -161,7 +164,7 @@ public class NanikaMini extends Canvas
 
 	/**
 	 * 背景を描画します。
-	 * 
+	 *
 	 * @param g Graphics コンテキスト
 	 */
 	public void paint(Graphics g)
@@ -171,7 +174,7 @@ public class NanikaMini extends Canvas
 
 	/**
 	 * 背景を描画します。
-	 * 
+	 *
 	 * @param g Graphics2D コンテキスト
 	 */
 	private void paint2d(Graphics2D g)

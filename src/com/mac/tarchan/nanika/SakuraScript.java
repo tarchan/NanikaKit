@@ -18,13 +18,13 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * このクラスは、さくらスクリプトを評価する機能を実装します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 public class SakuraScript
 {
-	/** ロガー */
+	/** ログ */
 	private static final Log log = LogFactory.getLog(SakuraScript.class);
 
 	/** ゴースト */
@@ -35,7 +35,7 @@ public class SakuraScript
 
 	/**
 	 * キーにマップする値を設定します。
-	 * 
+	 *
 	 * @param name キー
 	 * @param value 値
 	 * @return このオブジェクトへの参照
@@ -61,7 +61,7 @@ public class SakuraScript
 
 	/**
 	 * さくらスクリプトを評価して、ゴーストを操作します。
-	 * 
+	 *
 	 * @param script さくらスクリプト
 	 * @return さくらスクリプトの実行によって返される値
 	 */
@@ -99,7 +99,7 @@ public class SakuraScript
 
 	/**
 	 * さくらスクリプトを実行します。
-	 * 
+	 *
 	 * @param op 操作コード
 	 * @param value 1 ケタ引数
 	 * @param detail 角カッコ引数
@@ -237,7 +237,7 @@ public class SakuraScript
 
 	/**
 	 * トークを表示します。
-	 * 
+	 *
 	 * @param message トーク
 	 */
 	protected void talk(String message)
@@ -249,7 +249,7 @@ public class SakuraScript
 
 	/**
 	 * ターゲットのメソッドを実行します。
-	 * 
+	 *
 	 * @param target ターゲット
 	 * @param name メソッド名
 	 * @param args 引数
@@ -292,7 +292,7 @@ public class SakuraScript
 
 	/**
 	 * さくらスクリプトの文字列表現を返します。
-	 * 
+	 *
 	 * @return さくらスクリプトの文字列表現
 	 */
 	public String toString()

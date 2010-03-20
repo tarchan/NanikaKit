@@ -32,13 +32,13 @@ import com.mac.tarchan.nanika.nar.NanikaEntry;
 
 /**
  * バルーンを実装します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  */
 public class SakuraBalloon
 {
-	/** ロガー */
+	/** ログ */
 	private static final Log log = LogFactory.getLog(SakuraBalloon.class);
 
 	/** 名前 */
@@ -88,7 +88,7 @@ public class SakuraBalloon
 
 	/**
 	 * バルーンを構築します。
-	 * 
+	 *
 	 * @param name sakura または kero
 	 * @param nar NAR ファイル
 	 * @throws IOException 入力エラーが発生した場合
@@ -212,7 +212,7 @@ public class SakuraBalloon
 
 	/**
 	 * シェルの名前を返します。
-	 * 
+	 *
 	 * @return シェルの名前
 	 */
 	public String getName()
@@ -222,7 +222,7 @@ public class SakuraBalloon
 
 	/**
 	 * シェルの作成者名を返します。
-	 * 
+	 *
 	 * @return シェルの作成者名
 	 */
 	public String getCraftman()
@@ -232,7 +232,7 @@ public class SakuraBalloon
 
 	/**
 	 * 表示オフセットを設定します。
-	 * 
+	 *
 	 * @param x X 座標
 	 * @param y Y 座標
 	 */
@@ -244,7 +244,7 @@ public class SakuraBalloon
 
 	/**
 	 * 表示位置を設定します。
-	 * 
+	 *
 	 * @param align 表示位置
 	 */
 	public void setAlignment(String align)
@@ -255,7 +255,7 @@ public class SakuraBalloon
 
 	/**
 	 * バルーンサーフェスを変更します。
-	 * 
+	 *
 	 * @param id サーフェス ID
 	 */
 	public void setSurface(int id)
@@ -277,7 +277,7 @@ public class SakuraBalloon
 
 	/**
 	 * 表示文字列を追加します。
-	 * 
+	 *
 	 * @param str 文字列
 	 */
 	public void append(CharSequence str)
@@ -291,7 +291,7 @@ public class SakuraBalloon
 
 	/**
 	 * バルーンを描画します。
-	 * 
+	 *
 	 * @param g Graphics2D コンテキスト
 	 */
 	public void draw(Graphics2D g)
@@ -335,7 +335,7 @@ public class SakuraBalloon
 
 	/**
 	 * バルーンの文字列表現を返します。
-	 * 
+	 *
 	 * @return バルーンの文字列表現
 	 */
 	public String toString()

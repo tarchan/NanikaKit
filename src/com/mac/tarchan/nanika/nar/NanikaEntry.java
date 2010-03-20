@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * このクラスは、NAR ファイルエントリを表すために使用します。
- * 
+ *
  * @since 1.0
  * @author tarchan
  * @see ZipFile
@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class NanikaEntry
 {
-	/** ロガー */
+	/** ログ */
 	private static final Log log = LogFactory.getLog(NanikaEntry.class);
 
 	/** ZIP ファイル */
@@ -45,7 +45,7 @@ public class NanikaEntry
 
 	/**
 	 * NanikaEntry を構築します。
-	 * 
+	 *
 	 * @param zip ZIP ファイル
 	 * @param entry ZIP エントリー
 	 */
@@ -60,7 +60,7 @@ public class NanikaEntry
 
 	/**
 	 * エントリー名を返します。
-	 * 
+	 *
 	 * @return エントリー名
 	 */
 	public String getName()
@@ -70,7 +70,7 @@ public class NanikaEntry
 
 	/**
 	 * 入力ストリームを返します。
-	 * 
+	 *
 	 * @return 入力ストリーム
 	 * @throws IOException 入力エラーが発生した場合
 	 */
@@ -81,7 +81,7 @@ public class NanikaEntry
 
 	/**
 	 * プレーンテキスト形式を読み込みます。
-	 * 
+	 *
 	 * @return プレーンテキスト
 	 * @throws IOException 入力エラーが発生した場合
 	 */
@@ -108,7 +108,7 @@ public class NanikaEntry
 
 	/**
 	 * descript テキスト形式を読み込みます。
-	 * 
+	 *
 	 * @param descript 出力先プロパティー
 	 * @param encoding 文字エンコーディング
 	 * @throws IOException 入力エラーが発生した場合
@@ -142,7 +142,7 @@ public class NanikaEntry
 
 	/**
 	 * descript テキスト形式を読み込みます。
-	 * 
+	 *
 	 * @return プロパティーオブジェクト
 	 * @throws IOException 入力エラーが発生した場合
 	 */
@@ -179,7 +179,7 @@ public class NanikaEntry
 
 	/**
 	 * descript テキスト形式を読み込みます。
-	 * 
+	 *
 	 * @param defaults デフォルトプロパティー
 	 * @return プロパティーオブジェクト
 	 * @throws IOException 入力エラーが発生した場合
@@ -193,7 +193,7 @@ public class NanikaEntry
 
 	/**
 	 * イメージ形式を読み込みます。
-	 * 
+	 *
 	 * @return イメージ
 	 * @throws IOException 入力エラーが発生した場合
 	 */
@@ -205,7 +205,7 @@ public class NanikaEntry
 
 	/**
 	 * NAR エントリの文字列表現を返します。
-	 * 
+	 *
 	 * @return NAR エントリの文字列表現
 	 */
 	public String toString()
