@@ -3,3 +3,5 @@ old/
 doc/
 rsrc/
 lib/
+*.jar
+surface*.*
