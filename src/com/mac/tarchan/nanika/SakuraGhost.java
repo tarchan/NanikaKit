@@ -39,6 +39,7 @@ import com.mac.tarchan.nanika.nar.NanikaArchive;
  *
  * @since 1.0
  * @author tarchan
+ * @deprecated
  */
 public class SakuraGhost
 {

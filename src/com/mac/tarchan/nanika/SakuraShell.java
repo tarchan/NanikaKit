@@ -29,6 +29,7 @@ import com.mac.tarchan.nanika.nar.NanikaEntry;
  *
  * @since 1.0
  * @author tarchan
+ * @deprecated
  */
 public class SakuraShell
 {

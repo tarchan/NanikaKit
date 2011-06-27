@@ -28,12 +28,12 @@
 package test.com.mac.tarchan.nanika;
 
 import java.awt.BorderLayout;
-import java.awt.Canvas;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
+import java.io.File;
 import java.io.IOException;
 
-import javax.swing.Box;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,6 +47,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.mac.tarchan.desktop.DesktopSupport;
+import com.mac.tarchan.desktop.InputBox;
 import com.mac.tarchan.desktop.SexyControl;
 import com.mac.tarchan.desktop.event.EventQuery;
 import com.mac.tarchan.nanika.shell.NanikaScope;
@@ -59,7 +60,7 @@ import com.mac.tarchan.nanika.util.NarFile.Type;
  *
  * @author tarchan
  */
-public class NanikaPreview extends Canvas
+public class NanikaPreview
 {
 	/** シリアルバージョンID */
 	private static final long serialVersionUID = 5016313064569130843L;
@@ -69,6 +70,12 @@ public class NanikaPreview extends Canvas
 
 	/** ウインドウ */
 	JFrame window;
+
+	/** メインパネル */
+	JPanel grid;
+
+	/** ファイルダイアログ */
+	JFileChooser fd = new JFileChooser();
 
 	/** シェル */
 	NanikaShell shell;
@@ -84,21 +91,27 @@ public class NanikaPreview extends Canvas
 //		PropertyConfigurator.configure("log4j.properties");
 		try
 		{
-			String zip = "/Users/tarchan/Documents/nanika/nar/akane_v135.nar";
+//			String zip = "/Users/tarchan/Documents/nanika/nar/akane_v135.nar";
 //			String zip = "/Users/tarchan/Documents/nanika/nar/333-2.60.nar";
 //			String zip = "/Users/tarchan/Documents/nanika/nar/mayura_v340.zip";
 //			String zip = "/Users/tarchan/Documents/nanika/nar/cmd.nar";
 //			if (args.length > 0) zip = args[0];
-			NanikaPreview app = new NanikaPreview();
+			String zip = args[0];
+			NanikaPreview preview = new NanikaPreview();
 //			app.createWindow().setVisible(true);
-			DesktopSupport.show(app.createWindow());
-			app.init(zip);
+			DesktopSupport.show(preview.createWindow());
+			preview.setNar(zip);
 		}
 		catch (Exception x)
 		{
 			x.printStackTrace();
 		}
 	}
+
+//	public NanikaPreview(String zip) throws IOException
+//	{
+//		setNar(zip);
+//	}
 
 	/**
 	 * ウインドウを作成します。
@@ -108,12 +121,13 @@ public class NanikaPreview extends Canvas
 	JFrame createWindow()
 	{
 		JFrame window = new JFrame("NanikaPreview");
-		window.setName("window");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setName("window");
 		window.setSize(900, 500);
 //		window.add(this, BorderLayout.CENTER);
 //		window.add(createFooterComponent(), BorderLayout.SOUTH);
 		window.setJMenuBar(createJMenuBar());
+		window.add(createComponent());
 
 		EventQuery.from(window).find("preferencesTable").change(this, "selectRow", "").end()
 			.find("menubar").button().click(this).end()
@@ -128,6 +142,28 @@ public class NanikaPreview extends Canvas
 
 		this.window = window;
 		return window;
+	}
+
+	Component createComponent()
+	{
+		JPanel grid = new JPanel();
+		this.grid = grid;
+//		Box box = Box.createHorizontalBox();
+//		box.add(grid);
+//		box.add(Box.createHorizontalGlue());
+//		box.setOpaque(false);
+		JScrollPane scroll = new JScrollPane(grid);
+		scroll.setName("scroll");
+//		main.setPreferredSize(new Dimension(800, 0));
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.getVerticalScrollBar().setUnitIncrement(8);
+		scroll.getVerticalScrollBar().setBlockIncrement(320);
+//		scroll.setBackground(new Color(0, true));
+		scroll.setOpaque(false);
+//		scroll.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
+//		window.add(scroll);
+		return scroll;
 	}
 
 	/**
@@ -151,15 +187,6 @@ public class NanikaPreview extends Canvas
 	}
 
 	/**
-	 * NAR ファイルを開きます。
-	 */
-	public void openNar()
-	{
-		JFileChooser fd = new JFileChooser();
-		fd.showOpenDialog(window);
-	}
-
-	/**
 	 * サーフェス一覧の表示領域を変更します。
 	 *
 	 * @param evt イベント
@@ -170,14 +197,33 @@ public class NanikaPreview extends Canvas
 	}
 
 	/**
+	 * NAR ファイルを開きます。
+	 */
+	public void openNar()
+	{
+		try
+		{
+			if (fd.showOpenDialog(window) != JFileChooser.APPROVE_OPTION) return;
+
+			File file = fd.getSelectedFile();
+			setNar(file.getPath());
+		}
+		catch (Throwable x)
+		{
+			InputBox.alert("NAR ファイルが開けません。" + x.getLocalizedMessage());
+		}
+	}
+
+	/**
 	 * 初期化します。
 	 *
 	 * @param zip NAR ファイル名
 	 * @throws IOException 初期化できない場合
 	 */
-	void init(String zip) throws IOException
+	public void setNar(String zip) throws IOException
 	{
 		NarFile nar = NarFile.load(zip);
+		fd.setSelectedFile(new File(zip));
 		log.info("nar=" + nar);
 		nar.list();
 		if (nar.getType() == Type.ghost)
@@ -192,7 +238,9 @@ public class NanikaPreview extends Canvas
 //			window.add(main);
 			int rows = (shell.getSurfaceCount() + 4) / 5;
 			log.debug("rows=" + rows + ", " + shell.getSurfaceKeys());
-			JPanel main = new JPanel(new GridLayout(rows, 5));
+			grid.removeAll();
+			grid.setLayout(new GridLayout(rows, 5));
+//			JPanel grid = new JPanel(new GridLayout(rows, 5));
 //			JPanel main = new JPanel(new FlowLayout());
 			for (String id : shell.getSurfaceKeys())
 			{
@@ -203,24 +251,24 @@ public class NanikaPreview extends Canvas
 				JPanel koma = new JPanel(new BorderLayout());
 				koma.add(scope, BorderLayout.CENTER);
 				koma.add(label, BorderLayout.SOUTH);
-				main.add(koma);
+				grid.add(koma);
 			}
-			Box box = Box.createHorizontalBox();
-			box.add(main);
-			box.add(Box.createHorizontalGlue());
-			box.setOpaque(false);
-			JScrollPane scroll = new JScrollPane(main);
-			scroll.setName("scroll");
-//			main.setPreferredSize(new Dimension(800, 0));
-			scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-			scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			scroll.getVerticalScrollBar().setUnitIncrement(8);
-			scroll.getVerticalScrollBar().setBlockIncrement(320);
-//			scroll.setBackground(new Color(0, true));
-			scroll.setOpaque(false);
-//			scroll.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
-			window.add(scroll);
-//			window.add(main);
+////			Box box = Box.createHorizontalBox();
+////			box.add(grid);
+////			box.add(Box.createHorizontalGlue());
+////			box.setOpaque(false);
+//			JScrollPane scroll = new JScrollPane(grid);
+//			scroll.setName("scroll");
+////			main.setPreferredSize(new Dimension(800, 0));
+//			scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//			scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//			scroll.getVerticalScrollBar().setUnitIncrement(8);
+//			scroll.getVerticalScrollBar().setBlockIncrement(320);
+////			scroll.setBackground(new Color(0, true));
+//			scroll.setOpaque(false);
+////			scroll.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
+//			window.add(scroll);
+////			window.add(main);
 			window.validate();
 //			box.setBackground(new Color(0, true));
 //			window.setBackground(new Color(0, true));
