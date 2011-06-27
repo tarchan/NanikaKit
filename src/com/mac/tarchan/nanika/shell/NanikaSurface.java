@@ -308,8 +308,6 @@ public class NanikaSurface extends Canvas
 	public void draw(Graphics2D g)
 	{
 		if (log.isTraceEnabled()) log.debug("id=" + id + ", size=" + getSize());
-//		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-//		g.setBackground(new Color(0, true));
 //		g.clearRect(0, 0, getWidth(), getHeight());
 		if (animations.isEmpty())
 		{

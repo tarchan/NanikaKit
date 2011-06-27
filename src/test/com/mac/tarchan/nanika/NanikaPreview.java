@@ -28,6 +28,7 @@
 package test.com.mac.tarchan.nanika;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
@@ -50,7 +51,7 @@ import com.mac.tarchan.desktop.DesktopSupport;
 import com.mac.tarchan.desktop.InputBox;
 import com.mac.tarchan.desktop.SexyControl;
 import com.mac.tarchan.desktop.event.EventQuery;
-import com.mac.tarchan.nanika.shell.NanikaCanvas;
+import com.mac.tarchan.nanika.shell.NanikaScope;
 import com.mac.tarchan.nanika.shell.NanikaShell;
 import com.mac.tarchan.nanika.util.NarFile;
 import com.mac.tarchan.nanika.util.NarFile.Type;
@@ -124,9 +125,7 @@ public class NanikaPreview
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setName("window");
 		window.setSize(900, 500);
-		// TODO 矩形ウインドウ化
-//		window.setBackground(new java.awt.Color(0, true));
-//		window.setUndecorated(true);
+		window.setBackground(new Color(0, true));
 //		window.add(this, BorderLayout.CENTER);
 //		window.add(createFooterComponent(), BorderLayout.SOUTH);
 		window.setJMenuBar(createJMenuBar());
@@ -158,7 +157,7 @@ public class NanikaPreview
 //		box.setOpaque(false);
 		JScrollPane scroll = new JScrollPane(grid);
 		scroll.setName("scroll");
-//		scroll.setPreferredSize(new Dimension(800, 0));
+//		main.setPreferredSize(new Dimension(800, 0));
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scroll.getVerticalScrollBar().setUnitIncrement(8);
@@ -201,7 +200,7 @@ public class NanikaPreview
 	}
 
 	/**
-	 * NAR ファイルを選択します。
+	 * NAR ファイルを開きます。
 	 */
 	public void openNar()
 	{
@@ -219,7 +218,7 @@ public class NanikaPreview
 	}
 
 	/**
-	 * NAR ファイルを開きます。
+	 * 初期化します。
 	 *
 	 * @param zip NAR ファイル名
 	 * @throws IOException 初期化できない場合
@@ -237,7 +236,6 @@ public class NanikaPreview
 //			NanikaSurface surface = shell.getSurface(NanikaShell.SAKURA_ID);
 //			log.info("shell=" + shell);
 //			log.info("surface=" + surface);
-
 //			JPanel main = new JPanel();
 //			main.add(surface);
 //			window.add(main);
@@ -245,17 +243,16 @@ public class NanikaPreview
 			log.debug("rows=" + rows + ", " + shell.getSurfaceKeys());
 			grid.removeAll();
 			grid.setLayout(new GridLayout(rows, 5));
-//			grid.setLayout(new FlowLayout());
 //			JPanel grid = new JPanel(new GridLayout(rows, 5));
 //			JPanel main = new JPanel(new FlowLayout());
 			for (String id : shell.getSurfaceKeys())
 			{
-				NanikaCanvas canvas = new NanikaCanvas();
-				canvas.setShell(shell);
-				canvas.setSurface(id);
+				NanikaScope scope = new NanikaScope();
+				scope.setShell(shell);
+				scope.setSurface(id);
 				JLabel label = new JLabel(id, JLabel.CENTER);
 				JPanel koma = new JPanel(new BorderLayout());
-				koma.add(canvas, BorderLayout.CENTER);
+				koma.add(scope, BorderLayout.CENTER);
 				koma.add(label, BorderLayout.SOUTH);
 				grid.add(koma);
 //				grid.add(scope);
