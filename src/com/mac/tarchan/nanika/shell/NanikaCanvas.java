@@ -43,13 +43,13 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author tarchan
  */
-public class NanikaScope extends JPanel
+public class NanikaCanvas extends JPanel
 {
 	/** シリアルバージョンID */
 	private static final long serialVersionUID = -8122309255321836447L;
 
 	/** ログ */
-	private static final Log log = LogFactory.getLog(NanikaScope.class);
+	private static final Log log = LogFactory.getLog(NanikaCanvas.class);
 
 	/** シェル */
 	protected NanikaShell shell;
@@ -133,7 +133,7 @@ public class NanikaScope extends JPanel
 	{
 		if (surface == null) return;
 
-		g.clearRect(0, 0, getWidth(), getHeight());
+//		g.clearRect(0, 0, getWidth(), getHeight());
 		if (surface != null) surface.draw((Graphics2D)g);
 //		new Thread(new Runnable()
 //		{

@@ -28,7 +28,6 @@
 package test.com.mac.tarchan.nanika;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
@@ -51,7 +50,7 @@ import com.mac.tarchan.desktop.DesktopSupport;
 import com.mac.tarchan.desktop.InputBox;
 import com.mac.tarchan.desktop.SexyControl;
 import com.mac.tarchan.desktop.event.EventQuery;
-import com.mac.tarchan.nanika.shell.NanikaScope;
+import com.mac.tarchan.nanika.shell.NanikaCanvas;
 import com.mac.tarchan.nanika.shell.NanikaShell;
 import com.mac.tarchan.nanika.util.NarFile;
 import com.mac.tarchan.nanika.util.NarFile.Type;
@@ -125,7 +124,9 @@ public class NanikaPreview
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setName("window");
 		window.setSize(900, 500);
-		window.setBackground(new Color(0, true));
+		// TODO 矩形ウインドウ
+//		window.setBackground(new java.awt.Color(0, true));
+//		window.setUndecorated(true);
 //		window.add(this, BorderLayout.CENTER);
 //		window.add(createFooterComponent(), BorderLayout.SOUTH);
 		window.setJMenuBar(createJMenuBar());
@@ -247,12 +248,12 @@ public class NanikaPreview
 //			JPanel main = new JPanel(new FlowLayout());
 			for (String id : shell.getSurfaceKeys())
 			{
-				NanikaScope scope = new NanikaScope();
-				scope.setShell(shell);
-				scope.setSurface(id);
+				NanikaCanvas canvas = new NanikaCanvas();
+				canvas.setShell(shell);
+				canvas.setSurface(id);
 				JLabel label = new JLabel(id, JLabel.CENTER);
 				JPanel koma = new JPanel(new BorderLayout());
-				koma.add(scope, BorderLayout.CENTER);
+				koma.add(canvas, BorderLayout.CENTER);
 				koma.add(label, BorderLayout.SOUTH);
 				grid.add(koma);
 //				grid.add(scope);
