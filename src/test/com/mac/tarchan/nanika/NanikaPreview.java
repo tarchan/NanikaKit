@@ -28,6 +28,7 @@
 package test.com.mac.tarchan.nanika;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
@@ -124,10 +125,12 @@ public class NanikaPreview
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setName("window");
 		window.setSize(900, 500);
+		window.setBackground(new Color(0, true));
 //		window.add(this, BorderLayout.CENTER);
 //		window.add(createFooterComponent(), BorderLayout.SOUTH);
 		window.setJMenuBar(createJMenuBar());
 		window.add(createComponent());
+		SexyControl.setWindowShadow(window, false);
 
 		EventQuery.from(window).find("preferencesTable").change(this, "selectRow", "").end()
 			.find("menubar").button().click(this).end()
@@ -160,7 +163,7 @@ public class NanikaPreview
 		scroll.getVerticalScrollBar().setUnitIncrement(8);
 		scroll.getVerticalScrollBar().setBlockIncrement(320);
 //		scroll.setBackground(new Color(0, true));
-		scroll.setOpaque(false);
+//		scroll.setOpaque(false);
 //		scroll.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
 //		window.add(scroll);
 		return scroll;
@@ -252,6 +255,7 @@ public class NanikaPreview
 				koma.add(scope, BorderLayout.CENTER);
 				koma.add(label, BorderLayout.SOUTH);
 				grid.add(koma);
+//				grid.add(scope);
 			}
 ////			Box box = Box.createHorizontalBox();
 ////			box.add(grid);
