@@ -80,19 +80,19 @@ public class NanikaCanvas extends JPanel
 		{
 			setSize(surface.getSize());
 //			if (surface.isAnimations())
-			for (SerikoAnimation animation : surface.getAnimations())
-			{
-//				new SerikoTimer(90, new ActionListener()
-				new SerikoTimer(animation, new ActionListener()
-				{
-					@Override
-					public void actionPerformed(ActionEvent e)
-					{
-						if (log.isTraceEnabled()) log.debug("repaint=" + surface.getID());
-						repaint();
-					}
-				}).start();
-			}
+//			for (SerikoAnimation animation : surface.getAnimations())
+//			{
+////				new SerikoTimer(90, new ActionListener()
+//				new SerikoTimer(animation, new ActionListener()
+//				{
+//					@Override
+//					public void actionPerformed(ActionEvent e)
+//					{
+//						if (log.isTraceEnabled()) log.debug("repaint=" + surface.getID());
+//						repaint();
+//					}
+//				}).start();
+//			}
 		}
 	}
 
