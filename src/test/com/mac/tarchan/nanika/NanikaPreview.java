@@ -62,9 +62,6 @@ import com.mac.tarchan.nanika.util.NarFile.Type;
  */
 public class NanikaPreview
 {
-	/** シリアルバージョンID */
-	private static final long serialVersionUID = 5016313064569130843L;
-
 	/** ログ */
 	private static final Log log = LogFactory.getLog(NanikaPreview.class);
 
