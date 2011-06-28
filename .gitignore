@@ -4,3 +4,4 @@ rsrc/
 lib/
 *.jar
 surface*.*
+.settings/
