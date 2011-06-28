@@ -29,6 +29,7 @@ package com.mac.tarchan.nanika.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -117,8 +118,9 @@ public class NarFile
 		source = zip;
 		log.info("base=" + base);
 		this.base = base;
-		String path = new File(base, DESCRIPT).getPath();
+		String path = combinePath(base, DESCRIPT);
 		ZipEntry descript = zip.getEntry(path);
+		if (descript == null) throw new FileNotFoundException(DESCRIPT + " が見つかりません。: " + path);
 		config = new SakuraConfig(zip.getInputStream(descript), nar.getCharset());
 		config.setProperty("charset", nar.getCharset());
 		log.debug("config=" + config);
@@ -170,6 +172,18 @@ public class NarFile
 	}
 
 	/**
+	 * 2つのパスを結合します。
+	 * 
+	 * @param parent 親パス
+	 * @param child 子パス
+	 * @return 結合したパス
+	 */
+	protected static String combinePath(String parent, String child)
+	{
+		return parent != null ? parent + "/" + child : child;
+	}
+
+	/**
 	 * このファイルセットがアーカイブファイルかどうか判定します。
 	 *
 	 * @return アーカイブファイルの場合は true
@@ -191,11 +205,12 @@ public class NarFile
 		if (isNar())
 		{
 			ZipFile zip = (ZipFile)source;
-			name = new File(base, name).getPath();
+			name = combinePath(base, name);
 //			log.debug("name=" + name);
 			try
 			{
 				ZipEntry entry = zip.getEntry(name);
+				if (entry == null) throw new FileNotFoundException("ファイルが見つかりません。: " + name);
 				return zip.getInputStream(entry);
 			}
 			catch (IOException x)
@@ -266,7 +281,7 @@ public class NarFile
 	 */
 	public NarFile subdir(String path) throws IOException
 	{
-		path = new File(base, path).getPath();
+		path = combinePath(base, path);
 		log.info("src=" + source + ", path=" + path);
 		NarFile nar;
 		if (isNar())
