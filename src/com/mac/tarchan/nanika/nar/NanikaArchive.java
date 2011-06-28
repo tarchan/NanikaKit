@@ -29,6 +29,7 @@ import com.mac.tarchan.nanika.SakuraSurface;
  * @since 1.0
  * @author tarchan
  * @see ZipFile
+ * @deprecated
  */
 public class NanikaArchive
 {

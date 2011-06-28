@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
  * @author tarchan
  * @see ZipFile
  * @see ZipEntry
+ * @deprecated
  */
 public class NanikaEntry
 {

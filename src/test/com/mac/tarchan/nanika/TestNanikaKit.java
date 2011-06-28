@@ -341,11 +341,12 @@ public class TestNanikaKit
 	{
 		String[] args = new String[]
 		{
-			"akane_v135.nar",
-//			"/Users/tarchan/Documents/nanika/nar/akane_v135.zip",
-//			"/Users/tarchan/Documents/nanika/nar/333-2.60.nar",
-//			"/Users/tarchan/Documents/nanika/nar/mayura_v340.zip",
-//			"/Users/tarchan/Documents/nanika/nar/cmd.nar",
+//				"akane_v135.nar",
+				"akane_v135",
+//				"/Users/tarchan/Documents/nanika/nar/akane_v135.zip",
+//				"/Users/tarchan/Documents/nanika/nar/333-2.60.nar",
+//				"/Users/tarchan/Documents/nanika/nar/mayura_v340.zip",
+//				"/Users/tarchan/Documents/nanika/nar/cmd.nar",
 		};
 		for (String zip : args)
 		{

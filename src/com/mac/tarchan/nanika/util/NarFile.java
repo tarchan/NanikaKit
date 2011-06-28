@@ -136,7 +136,20 @@ public class NarFile
 	{
 		source = dir;
 		File install = new File(dir, INSTALL);
-		config = new SakuraConfig(new FileInputStream(install));
+		if (install.exists())
+		{
+			config = new SakuraConfig(new FileInputStream(install), "Shift_JIS");
+		}
+		else
+		{
+			File descript = new File(dir, DESCRIPT);
+			if (descript.exists())
+			{
+				config = new SakuraConfig(new FileInputStream(descript), "Shift_JIS");
+				// TODO 文字コード指定
+//				config.setProperty("charset", "Shift_JIS");
+			}
+		}
 		log.debug("config=" + config);
 	}
 
@@ -180,6 +193,7 @@ public class NarFile
 	 */
 	protected static String combinePath(String parent, String child)
 	{
+//		if (parent != null) parent = parent.replaceAll("\\\\", "/");
 		return parent != null ? parent + "/" + child : child;
 	}
 
@@ -218,7 +232,12 @@ public class NarFile
 				throw new IOException("Not Found " + name, x);
 			}
 		}
-		return null;
+		else
+		{
+			File file = new File((File)source, name);
+			if (!file.exists()) throw new FileNotFoundException("ファイルが見つかりません。: " + file);
+			return new FileInputStream(file);
+		}
 	}
 
 	/**
